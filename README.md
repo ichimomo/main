@@ -1,3 +1,5 @@
+![](fit.png)
+
 ### frasyr 
    - https://github.com/ichimomo/frasyr
    - 1系資源のVPA計算・管理基準値計算・将来予測シミュレーションを行うための関数を集めたRパッケージ
