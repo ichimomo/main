@@ -47,3 +47,5 @@
 ### その他
    - 再生産関係の選択の基準に関する[事例集](http://abchan.fra.go.jp/nc/htdocs/?action=cabinet_action_main_download&block_id=1543&room_id=765&cabinet_id=78&file_id=6204&upload_id=9747)（内部のみ） 
 
+![](fit1.png)
+
