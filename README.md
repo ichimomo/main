@@ -24,7 +24,7 @@
    - [frasyrのWiki](https://github.com/ichimomo/frasyr/wiki)には以下の情報があります
       - [frasyr各種便利関数の紹介](https://github.com/ichimomo/frasyr/wiki/Cheat-Sheet)
       - [再生産関係のパラメータ推定におけるモデル診断手順](https://github.com/ichimomo/frasyr/wiki/Diagnostics-for-Stock-Recruitment-Relationships)
-      - [将来予測関数の使い方] (https://github.com/ichimomo/frasyr/wiki/future_new)
+      - [将来予測関数の使い方](https://github.com/ichimomo/frasyr/wiki/future_new)
       - [frasyrブランチ運用方法(開発者向け)](https://github.com/ichimomo/frasyr/wiki/Branch-Operation-manual)
       - [frasyr開発手順について(開発者向け)](https://github.com/ichimomo/frasyr/wiki/Development-Policy)
 	  
@@ -47,5 +47,5 @@
 ### その他
    - 再生産関係の選択の基準に関する[事例集](http://abchan.fra.go.jp/nc/htdocs/?action=cabinet_action_main_download&block_id=1543&room_id=765&cabinet_id=78&file_id=6204&upload_id=9747)（内部のみ） 
 
-![](fit1.png)
-
+#### frasyrとfrasyr_toolの関係
+<img src="fit1.png" width=50%>
