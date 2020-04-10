@@ -186,4 +186,4 @@ dat_read2 <- readr::read_csv("test.csv")
 
 ## 8日目：ggplot2とtidyverse (2)
 
----> 
+--->
