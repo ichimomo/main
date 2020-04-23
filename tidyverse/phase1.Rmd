@@ -349,7 +349,7 @@ dimnames(data1) <- list(c("地点A","地点B"),2010:2013)
 # pivot_longerを使って縦長データへ変換する
 data1_long <- data1 %>% as.data.frame() %>%
      tibble::rownames_to_column(var = "area") %>%
-     tidyr::pivot_longer(col=-area, names_to="year", values_to="CPUE") 
+     tidyr::pivot_longer(col=-area, names_to="year", values_to="CPUE")
 
 # (補足) 裸のRでやる場合
 data1_long2 <- as.data.frame.table(data1)
@@ -365,7 +365,7 @@ colnames(data1_long2) <- c("area","year","value")
 
 わかりやすいかどうかはわかりませんが、以下、pivot_longerの構造を図示してみました。
 
-<img src="pivot_longer.png" width="300px">
+<img src="pivot_longer.png" width="500px">
 
 さっき、非整然データはいろいろだ、と言いましたが、けっこうありそうな非整然データは、２つの要因があってそれを２次元の表にまとめてしまう、というものだと思います。この場合要因Aは行に記録されているけど、要因Bの各要素は列に展開されています。そのような場合、要因Bが書いてある列（赤く囲んだところ）のほうを「縦長へ」指定する＝この列名をpivot_longerの引数colsに指定する、ということになります。図の例で、縦長に変換したい列は要因B-1, 要因B-2, ... になります。ただ、これが多すぎて書くのが大変だという場合、`-`(マイナス)記号を使って `col=c(-要因A, -要因Aの説明)`とすると「要因Aと要因Aの説明以外」が縦型に変換されます。または、`help(povot_longer)`の`example`でもいろいろ紹介されていますが、列名の指定の時に`starts_with("要因B-")`と書くと、「要因B-」で始まる列名すべてを取り出してきてくれます。
 
@@ -414,7 +414,8 @@ data_vpa <- tibble::lst(caa, waa, maa) %>%
 print(data_vpa)                    
 ```
 
-上のコードの意味は以下の通り：
+上のコードの意味は以下の通りです。
+
 - caa, waa, maaに対して同じような処理を繰り返すのが無駄なので、caa, maa, waaはリストに入れて一括して処理するようにする。そのさい`tibble::lst`を使うと、オブジェクト名がそのままリストの名前になるのでわざわざ`list(caa=caa, maa=maa, waa=waa)`としなくてよくて便利。
 - 上で作ったリストに対して、一括して同じ関数を適用して結果をtibble形式でくっつけるための関数 `purrr::map_dfr`を適用
 - リストの中身に適用する関数は `. %>% ` を使って省略。関数内のコードは上のA1で示したコードと同じ
