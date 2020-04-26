@@ -1,3 +1,5 @@
+このページのHP版　https://ichimomo.github.io/main/
+
 ### [frasyr](https://github.com/ichimomo/frasyr)
    - 1系資源のVPA計算・管理基準値計算・将来予測シミュレーションを行うための関数を集めたRパッケージ
    - ブランチ構成
@@ -34,6 +36,8 @@
    - [frasyr_toolのWiki](https://github.com/ichimomo/frasyr_tool/wiki)には以下の情報があります
       - [fraysr_toolのスクリプトがうまく動かない場合の相談のしかた](https://github.com/ichimomo/frasyr_tool/wiki/%E3%83%90%E3%82%B0%E5%A0%B1%E5%91%8A%E3%83%BB%E3%82%A8%E3%83%A9%E3%83%BC%E7%9B%B8%E8%AB%87%E3%81%AE%E3%82%84%E3%82%8A%E3%81%8B%E3%81%9F)。問題あったかたはまずこちらをご一読し，その後，issueかチームスかどちらかに質問を投げてください．
       - [fraysr_toolの途中で出力される再生産関係の比較の表の見方](https://github.com/ichimomo/frasyr_tool/wiki/%E5%86%8D%E7%94%9F%E7%94%A3%E9%96%A2%E4%BF%82%E3%81%AE%E8%A1%A8%E3%81%AE%E8%A6%8B%E6%96%B9)
+
+  - [tidyverse 勉強会](https://github.com/ichimomo/main/tree/master/tidyverse)：tidyなデータを取り扱うことを目的とした近代的なRコード群を提供するtidyverseの解説です
 
 ## その他のレポジトリ
 
