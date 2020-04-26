@@ -5,9 +5,9 @@
   - 勉強会の概要
 - day2: [2回目：インストールと使い方](https://github.com/ichimomo/main/blob/master/tidyverse/day2.md)
   - tidyverseのインストール
+  - パッケージを引用する記号"::"について    
 - day3: [3回目：tidyverseの中身と代表的な便利関数](https://github.com/ichimomo/main/blob/master/tidyverse/day3.md)
-  - tidyverseに含まれるパッケージの概要  
-  - パッケージを引用する記号"::"について  
+  - tidyverseに含まれるパッケージの概要
 - day4: [4回目：tidy data (整然データ) とは？](https://github.com/ichimomo/main/blob/master/tidyverse/day4.md)
   - tidy data (整然データ)とは？
 - day5: [5回目：（ちょっと寄り道）%>% について](https://github.com/ichimomo/main/blob/master/tidyverse/day5.md)
