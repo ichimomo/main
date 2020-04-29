@@ -1,213 +1,128 @@
-3日目：tidyverseの中身と代表的な便利関数
+6日目：データの横→縦変換
+------------------------
+
+では、６日目、とうとうデータを縦横に変換していきます。といってもそんなに難しいことはなく、`tidyr`パッケージにある`pivot_longer`
+(横長データを縦長データへ)と、`pivot_wider`（縦長データを横長データへ）を使います。以前は、`spread`、`gather`という名前の関数が使われていましたが、いまいち名前がわかりにくいということで、`pivot_longer`、`pivot_wider`に変わったようです。たしかに、以前の関数名のときは、どっちがどっちかわからなくて毎回ググるはめになっていたんですが、新しい関数名だとググらなくても名前から機能が想像できますね。
+
+４日目に解説したように、縦長のデータは整然データ、横長のデータは非整然データに対応しますが、「整然データ」というと、最初に整然データの概念を提唱したWickham
+(2014)の定義にちゃんと従っているデータ、というような印象を受けるような気がするので、（特別に「整然データ」であることを強調したいとき以外は）ここでは縦長・横長データと言います。
+
+横長データを縦長データへ：`pivot_longer`
 ----------------------------------------
 
-いよいよtidyverseをインストールしました。3回目は、tidyverseで呼び出される複数のパッケージの中で、従来関数と互換性のある、でも、tidyverseのほうがちょっと便利な関数を紹介します。既存のR関数との比較はRをすでにけっこう知っている人向けの解説なので、R初修者はわからなくても気にしなくてもいいです。
+データをとった（もらった）がめっちゃ雑然としている、、。解析するためにはまずこれを「整然」データに直さないといけない、、というのがだいたいデータを解析するときの、一番最初にする作業だと思います。
 
-### パッケージ：tibble
+「幸福な家族はどれも似ているが、不幸な家族は不幸のあり方がそれぞれ異なっている。」とはトルストイの名言ですが、整然（縦長）データを定義したWickham
+(2014)
+は、「家族と同じく、整然データセットはどれも似ているが、雑然データセットは雑然のあり方がそれぞれ異なっている」と述べています。つまり、雑然としているデータの雑然度合いは、それぞればらばらなので、非整然データを整然データに成型するやり方を統一的に提供するのはなかなか難しいです。
 
-データを格納する形式である **tibble (←→ data.frame)** を提供。
+なので、ここでは、表１（４日目）で示した一般的な横長データを、表２のような縦長データに変換するときのコマンドを軽く紹介します。個々の事例（こんなデータの場合はどうする？）については、別途、例を出しあって解決方法を探ることにしましょう。
 
-**Q1**: tibbleとdata.frameの違いを比較してみよう！
+    # 表1の横長データ
+    data1 <- rbind(c(1000, 720, 420, 100), c(120, 50, 20, 10))
 
-    dat_f <- data.frame(a = 1:100, b = rnorm(100))  # 100行2列のデータフレームを作る
-    dat_t <- tibble::tibble(a = 1:100, b = rnorm(100))  # 上と同じ操作
-    dat_f
+    # pivot_longerを使って縦長データへ変換する
+    data1_long <- data1 %>% as.data.frame() %>% tibble::rownames_to_column(var = "area") %>% tidyr::pivot_longer(col = -area,
+        names_to = "year", values_to = "CPUE")
 
-        a            b
-    1   1 -1.528585118
-    2   2 -0.028523499
-    3   3  2.206266881
-    4   4 -0.422555063
-    5   5  1.151577270
-    6   6  1.790286039
-    7   7  0.794319870
-    8   8 -0.488337838
-    9   9  3.308197254
-    10 10  0.894252584
-    11 11  1.709600375
-    12 12 -1.009990368
-    13 13 -1.430300005
-    14 14  0.473778813
-    15 15  0.128039184
-    16 16 -1.465024494
-    17 17 -0.340616245
-    18 18 -0.782958038
-    19 19  0.668534645
-    20 20 -0.469560151
-    21 21  0.371053816
-    22 22  0.325549725
-    23 23 -0.306637668
-    24 24 -0.754134030
-    25 25 -0.433352375
-    26 26 -0.628792635
-    27 27  0.694517382
-    28 28 -0.002651191
-    29 29  0.873518080
-    30 30 -0.680338376
-    31 31  1.308500208
-    32 32 -0.343558093
-    33 33 -1.530673112
-    34 34  0.800112071
-    35 35  0.367570763
-    36 36 -1.579761705
-    37 37  0.863388003
-     [ reached 'max' / getOption("max.print") -- omitted 63 rows ]
+    # (補足) 裸のRでやる場合
+    data1_long2 <- as.data.frame.table(data1)
+    colnames(data1_long2) <- c("area", "year", "value")
 
-    dat_t
+上のコードの1行目では、`data1`をデータフレーム（data.frame）形式に変換しています。これは、２行目で実行するtibble::rownames\_to\_column
+関数がdata.frame（またはtibble形式）でないと受け付けてくれないからです。（ここで`tibble::as_tibble`でtibble形式にする方法もありますが、その場合には行の名前が失われてしまって２行目で困るので、ここではdata.frameにしています。）
 
-    # A tibble: 100 x 2
-           a        b
-       <int>    <dbl>
-     1     1  1.28
-     2     2  0.00783
-     3     3 -0.0674
-     4     4  0.874
-     5     5 -0.798
-     6     6  0.0954
-     7     7  0.633
-     8     8 -1.83
-     9     9 -2.11
-    10    10  0.543
-    # ... with 90 more rows
+２行目では、data1に行名（rownames）として記録されていた地点A、地点Bといった情報を「列(col)」データに出力しています。そのためのコマンドが`tibble::rownames_to_column`です（私もこれを書いているときに知りました）。引数`var`では、新しい列の名前、ここでは“area”としました、を指定します。これを指定しなくても関数は動きます。その場合とデフォルト値のの`rownames`という名前がつきます。
 
-**A1**:
-中身はほとんど同じだけど、中身を表示させたときの挙動が違うよ。通常のdata.frameは、全データを単純に全部出力しようとします。一方、tibbleの場合は行数や列数が長すぎるばあいは途中で省略し（\#
-… with 90 more rows（それとあと90行）,
-という表記）、また、冒頭にデータフレームの構造（\# A tibble: 100x2
-(100列２行のtibble形式の行列、それぞれの列の「型」がなんであるか（<int>(整数)
-<dbl>(連続数)など）の情報を出力します。
+そして３行目でいよいよ`tidyr::pivot_longer`でデータを縦長に変換します。引数colでは
+**縦に並べたい列の名前** を指定します。
+ここでは「area以外全部の列」を縦に並べたいので、`-area`というふうに指定します。あと、`names_to`は縦に並べたときに新しくできる要素の列の名前（指定しないとデフォルト値の“name”となります）、`values_to`は新しくできる値の列の名前（指定しないとデフォルトの“value”となります）。
 
-あと、リストを作成する **lst (←→ list)**
-も便利だということを最近知りました。
+わかりやすいかどうかはわかりませんが、以下、pivot\_longerの構造を図示してみました。
 
-**Q2**: lstとlistの違いを比較してみよう！
+<img src="pivot_longer.png" width="500px">
 
-    a <- 1:10
-    b <- c("char1", "char2", "char3")
-    list_list <- list(a, b)
-    list_lst <- tibble::lst(a, b)
-    list_list
+さっき、非整然データはいろいろだ、と言いましたが、けっこうありそうな非整然データは、２つの要因があってそれを２次元の表にまとめてしまう、というものだと思います。この場合要因Aは行に記録されているけど、要因Bの各要素は列に展開されています。そのような場合、要因Bが書いてある列（赤く囲んだところ）のほうを「縦長へ」指定する＝この列名をpivot\_longerの引数colsに指定する、ということになります。図の例で、縦長に変換したい列は要因B-1,
+要因B-2, …
+になります。ただ、これが多すぎて書くのが大変だという場合、`-`(マイナス)記号を使って
+`col=c(-要因A, -要因Aの説明)`とすると「要因Aと要因Aの説明以外」が縦型に変換されます。または、`help(povot_longer)`の`example`でもいろいろ紹介されていますが、列名の指定の時に`starts_with("要因B-")`と書くと、「要因B-」で始まる列名すべてを取り出してきてくれます。
 
-    [[1]]
-     [1]  1  2  3  4  5  6  7  8  9 10
+### 練習問題:
 
-    [[2]]
-    [1] "char1" "char2" "char3"
+frasyrのvpa関数へのインプットデータも典型的な横長データです。これを縦型データに直して、また、年齢別漁獲尾数、自然死亡係数、、などの複数のデータを一つのデータセットに変換してみましょう。
 
-    list_lst
+例データはこちらになります。
 
-    $a
-     [1]  1  2  3  4  5  6  7  8  9 10
+    # githubのfrasyrの例データを読み込む
+    caa <- read.csv("https://raw.githubusercontent.com/ichimomo/frasyr/dev/data-raw/ex2_caa.csv",
+        row.names = 1)
+    waa <- read.csv("https://raw.githubusercontent.com/ichimomo/frasyr/dev/data-raw/ex2_waa.csv",
+        row.names = 1)
+    maa <- read.csv("https://raw.githubusercontent.com/ichimomo/frasyr/dev/data-raw/ex2_maa.csv",
+        row.names = 1)
 
-    $b
-    [1] "char1" "char2" "char3"
+### A1:素朴なやり方
 
-**A2**:
-オブジェクトをまとめてリストにしたとき、lstは自動的にもともとのオブジェクトの名前がつくよ。関数の返り値をリスト形式にして返すとき、地味に便利です。
+上の例を少し変えて、以下のようにやります。
 
-### パッケージ：readr
+    # caaはすでにdata.frameになっているのでas.data.frameの行は必要ない
+    # yearのラベルの前にXというのがついているので、縦型変換するときにそれを無視する引数
+    # names_prefix='X' をつける
+    data_caa <- caa %>% tibble::rownames_to_column(var = "age") %>% tidyr::pivot_longer(col = -age,
+        names_to = "year", values_to = "value", names_prefix = "X")
 
-Rのパッケージの名前って、「機能」を示す単語＋r（R）というふうにつけるのが今風らしいです。なので、readrも、read
-+
-rと考えると、何かを「読む」ためのパッケージだということがわかります。同様に、stringrはstring
-+
-rなので、文字列を処理するための関数とわかります。（frasyrもそれにならって、FRA
-+ SY (sustainable yield) + rということでつけてみました。）
+    # 同じことをwaa, maaについても繰り返す
+    data_maa <- maa %>% tibble::rownames_to_column(var = "age") %>% tidyr::pivot_longer(col = -age,
+        names_to = "year", values_to = "value", names_prefix = "X")
+    data_waa <- waa %>% tibble::rownames_to_column(var = "age") %>% tidyr::pivot_longer(col = -age,
+        names_to = "year", values_to = "value", names_prefix = "X")
 
-readrはデータの入出力のための **read\_csv( ←→ read.csv)**, **write\_csv
-(←→ write.csv)** などを提供しています。
+    # bind_rowsという関数で縦にくっつける
+    data_vpa <- dplyr::bind_rows(data_caa, data_maa, data_waa, .id = "id")
 
-**Q3**: read\_csvとread.csvの違いを比較してみよう！
+### A2:ここまでやっちゃう？というやり方（一行で！）
 
-    write_csv(tibble(a = 1:10, b = rnorm(10)), path = "test.csv")  # 読み込むためのデータを出力しておく
-    dat_read1 <- read.csv("test.csv")
-    dat_read2 <- readr::read_csv("test.csv")
+最近学んだこと、今後紹介する関数を取り入れてやるとこんな感じに、、、。
 
-**A3**:
-read\_csvを使ってデータの読み込みに成功すると、読み込んだデータの概要を表示してくれます。また、読み込まれたデータは自動的にtibble形式になります。
+    data_vpa <- tibble::lst(caa, waa, maa) %>%
+     purrr::map_dfr(. %>% tibble::rownames_to_column(var = "age") %>%
+        tidyr::pivot_longer(col = -age, names_to = "year", values_to = "value", names_prefix = "X"),
+        .id = "data_type")
+    print(data_vpa)
 
-その他パッケージ
-----------------
+    # A tibble: 360 x 4
+       data_type age   year  value
+       <chr>     <chr> <chr> <dbl>
+     1 caa       0     1988  170.
+     2 caa       0     1989  211.
+     3 caa       0     1990  204.
+     4 caa       0     1991   70.4
+     5 caa       0     1992  420.
+     6 caa       0     1993  317.
+     7 caa       0     1994  108.
+     8 caa       0     1995  140.
+     9 caa       0     1996  466.
+    10 caa       0     1997  750.
+    # ... with 350 more rows
 
-その他パッケージは追い追い紹介していきますが、いちおう以下に一覧表を作ってみました。
+上のコードの意味は以下の通り：
 
-### 表：tidyverseが提供するパッケージと代表的な機能
+- caa, waa,
+maaに対して同じような処理を繰り返すのが無駄なので、caa, maa,
+waaはリストに入れて一括して処理するようにする。そのさい`tibble::lst`を使うと、オブジェクト名がそのままリストの名前になるのでわざわざ`list(caa=caa, maa=maa, waa=waa)`としなくてよくて便利。
+-
+上で作ったリストに対して、一括して同じ関数を適用して結果をtibble形式でくっつけるための関数
+`purrr::map_dfr`を適用 - リストの中身に適用する関数は `. %>%`
+を使って省略。関数内のコードは上のA1で示したコードと同じ -
+`purrr::map_dfr`の引数`.id`に列名を与えると、結合する３つのデータフレームの名前を列として出力してくれる（→与えたリストに名前がついている場合、その名前をidにしてくれる）
 
-<table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>パッケージ名</th>
-<th>説明</th>
-<th>代表的な関数(括弧内は、tidyverseを使わない場合のRの関数)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>tibble</td>
-<td>より柔軟な形式のデータフレーム<code>tibble</code>等を提供</td>
-<td>データフレームを作成:<code>tibble</code> (<code>data.frame</code>), データをtibble形式に変換:<code>as_tibble</code>, リストを作成: <code>lst</code>(list)</td>
-</tr>
-<tr class="even">
-<td>tidyr</td>
-<td>データを横長データから縦長データへ、縦長データから横長データへ変換する</td>
-<td>横長データを縦長データに変換する: <code>gather</code> (<code>as.data.frame.table</code>), 縦長データを横長データに変換する: <code>spread</code> (<code>tapply</code>)</td>
-</tr>
-<tr class="odd">
-<td>dplyr</td>
-<td>データを整形したり、変換したりする</td>
-<td>列を抽出: <code>select</code>, 行を抽出: <code>filter</code>(<code>subset</code>), 列を追加または変更: <code>mutate</code>, データの並び替え: <code>arrange</code> (<code>sort</code>,<code>order</code>), パイプ演算子: <code>%&gt;%</code>(詳細はBOX)</td>
-</tr>
-<tr class="even">
-<td>readr</td>
-<td>データの読み込みと出力。読んだデータはtibble形式となる。</td>
-<td><code>read_table</code>(<code>read.table</code>), <code>read_csv</code>(<code>read.csv</code>), <code>write_table</code>(<code>write.table</code>), <code>write_csv</code>(<code>write.csv</code>)</td>
-</tr>
-<tr class="odd">
-<td>stringr</td>
-<td>文字列操作</td>
-<td><code>str_</code>で始まる関数群。文字列結合: <code>str_c</code>(<code>paste</code>)</td>
-</tr>
-<tr class="even">
-<td>forcats</td>
-<td>カテゴリカル変数を取扱う</td>
-<td><code>fct_</code>で始まる関数群。他の変数を使ってカテゴリカル要素の順番(level)を付け替える: <code>fct_reorder</code>, 登場頻度が多い（少ない）順にlevelを付け替える: <code>fct_infreq</code></td>
-</tr>
-<tr class="odd">
-<td>purrr</td>
-<td>ループ処理やapply系関数</td>
-<td><code>map_</code>で始まる関数群。各要素に関数を適用: <code>map</code>(<code>lapply</code>), mapしたのちにdata.frameとして結合: <code>map_dfr</code> (<code>sapply</code>)</td>
-</tr>
-<tr class="even">
-<td>ggplot2</td>
-<td>グラフ作成（詳細は後日)</td>
-<td><code>ggplot</code>, <code>geom_</code>で始まる関数群</td>
-</tr>
-</tbody>
-</table>
+ここまでくると、tidyverseが本当にわかりやすいのかわからなくなりますね:star:
 
-次回は、上の表にある「縦長データ」「横長データ」について解説します。
+まとめ
+------
 
-### どうでもいい？雑談： . と \_ の違いについて
+今回はデータを横長データから縦長データに変換する`pivot_longer`をご紹介しました。生データをゲットしたさいに**一番最初にやる作業になる**と思います。一方、縦長データを横長データにするのは`pivot_wider`になりますが、それは、逆に
+**解析が全部終わって**
+データのサマリーをわかりやすい表に出力するときに使います。pivot\_widerはちょっと力尽きてあんまり紹介できませんでしたが、pivot\_longer()と逆のことをすると思っていただければ、、。
 
-裸のRの関数名は単語と単語の間を.で区切るものが多いです。一方、今風のRの関数は\_で区切るものが主流です。.の関数名はちょっと古い関数（または、メソッドという特別な機能が付与された関数）で、\_の関数名は新しめの関数と覚えておくと便利です（frasyrでもそうです）。
-
-なぜ、.から\_へのシフトがおこったんでしょう？
-
-20年前からRを使っていた人は、オブジェクトや関数の名前に絶対\_を入れませんでした。というのは、昔、Rでは
-\_ が「代入記号」として利用されていたんです。なんで、うっかり `dat_1`
-なんて書いてしまうと、`dat <- 1`
-または`dat = 1`と同じ動きをして、プログラムがめちゃくちゃになったのです、、。
-
-しかし、 この仕様はかなり昔に変更され、あと、プログラミングの
-[命名規約](https://ja.wikipedia.org/wiki/%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87_(%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0))
-では\_を使うほうが良いということもあり、私もようやく最近オブジェクト名に
-\_を使えるようになりました。
-
-ということで、frasyrでも、関数名やオブジェクト名に.と\_が混在していますが、.で区切られた名前の関数はたいてい古く、\_で区切られた名前の関数や関数の引数は比較的最近作られた関数だと区別してください（上に紹介したread.csvとread\_csvの違いのように）。たとえば、frasyrにはplot.futuresとplot\_futuresという関数がありますが、前者は裸のRで書かれた古い（素朴な）関数で、後者はggplot2で書かれた新しい関数です。
-
-（.で区切られた関数名は「メソッド」という新しい別の機能が付与されるため、けっこう使いづらく、最近ではむしろ避けられています。）
+次回は、整然データを操作するいろんな関数をご紹介します。
