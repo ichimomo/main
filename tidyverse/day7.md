@@ -91,13 +91,20 @@ tidyverseを使わず裸のRでやる場合から、(2)
     # data1_longのCPUEの平均値と分散を地点ごとに計算する
     data_summary <- data1_long %>%
                       group_by(area) %>% # grouping by area
-                      dplyr::summarise(mean_CPUE=mean(CPUE), var_CPUE=var(CPUE)) # calculate statistics
+                      dplyr::summarise(CPUE_mean=mean(CPUE), CPUE_var=var(CPUE)) %>%  # calculate statistics
+                      print()
+
+    # A tibble: 2 x 3
+      area  CPUE_mean CPUE_var
+      <chr>     <dbl>    <dbl>
+    1 地点A       560  150133.
+    2 地点B        50    2467.
 
 こんな感じです。これを裸のRを使ってやる場合には、関数`tapply`を使います。ただ、平均と分散の両方について２回書いてから並べないといけないので、ちょっと面倒くさいです。
 
     # 裸のRの場合
-    data1_long0 <- data.frame(mean_CPUE=tapply(data1_long$CPUE,data1_long$area,mean),
-               var_CPUE=tapply(data1_long$CPUE,data1_long$area,var))
+    data1_summary0 <- data.frame(CPUE_mean=tapply(data1_long$CPUE,data1_long$area,mean),
+                                 CPUE_var=tapply(data1_long$CPUE,data1_long$area,var))
 
 ただ、`dplyr::summarise`も超絶便利というわけではなく、summaryするための関数（上の例でいうと`mean`とか`var`とか）の返り値は一つでないといけないという制約があります。なので、`quantile(probs=c(0.05,0.5,0.95))`とかは使えません（ただし、dplyr1.00からは使えるようになるらしいです。
 <a href="https://www.tidyverse.org/blog/2020/03/dplyr-1-0-0-summarise/" class="uri">https://www.tidyverse.org/blog/2020/03/dplyr-1-0-0-summarise/</a>
@@ -116,7 +123,7 @@ tidyverseを使わず裸のRでやる場合から、(2)
                           longitude=c(150,170),
                           latitude=c(45,51))
 
-    # left_joinでくっつける
+    # left_joinでくっつける                      
     data1_long <- data1_long %>%
                     left_join(data_lonlat) %>%
                     print()
@@ -135,6 +142,25 @@ tidyverseを使わず裸のRでやる場合から、(2)
 
 そうすると、CPUEデータの地点A、地点Bに対応した緯度経度が新しい列として加わりました。left,
 rightの違いは、left\_joinの場合には左側のデータに右のデータをくっつける、right\_joinはその逆です。あと、いろいろinnner\_joinとかありますが、そのあたりは適当にググってください。
+
+また、完全に別のデータセットでなくても良くて、さきに作った地点Aと地点Bごとの平均値・分散を計算したデータ`data_summary`を元のデータ`data1_long`にくっつけるような使い方もあります。それにより、もともとのデータに「地点ごとのCPUEの平均値・分散」データが加わり、CPUEを地点ごとの平均値で割ってそれぞれの地域ごとのCPUEのレベルをそろえたいような場合に使えます。
+
+    data1_long <- data1_long %>%
+                    left_join(data_summary) %>%
+                    mutate(CPUE_standardized=CPUE/CPUE_mean) %>%
+                    print()
+
+    # A tibble: 8 x 8
+      area  year   CPUE longitude latitude CPUE_mean CPUE_var CPUE_standardized
+      <chr> <chr> <dbl>     <dbl>    <dbl>     <dbl>    <dbl>             <dbl>
+    1 地点A 2010   1000       150       45       560  150133.             1.79
+    2 地点A 2011    720       150       45       560  150133.             1.29
+    3 地点A 2012    420       150       45       560  150133.             0.75
+    4 地点A 2013    100       150       45       560  150133.             0.179
+    5 地点B 2010    120       170       51        50    2467.             2.4  
+    6 地点B 2011     50       170       51        50    2467.             1    
+    7 地点B 2012     20       170       51        50    2467.             0.4  
+    8 地点B 2013     10       170       51        50    2467.             0.2  
 
 ### まとめ
 
