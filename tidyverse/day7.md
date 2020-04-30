@@ -79,10 +79,10 @@ tidyverseを使わず裸のRでやる場合から、(2)
 平均値や分散などの要約統計量を見てみたいときに使います。
 
     # data1_longのCPUEの平均値と分散を計算する
-    data1_long %>% dplyr::summarise(mean_CPUE=mean(CPUE), var_CPUE=var(CPUE))
+    data1_long %>% dplyr::summarise(CPUE_mean=mean(CPUE), CPUE_var=var(CPUE))
 
     # A tibble: 1 x 2
-      mean_CPUE var_CPUE
+      CPUE_mean CPUE_var
           <dbl>    <dbl>
     1       305  139714.
 
@@ -146,8 +146,8 @@ rightの違いは、left\_joinの場合には左側のデータに右のデー�
 また、完全に別のデータセットでなくても良くて、さきに作った地点Aと地点Bごとの平均値・分散を計算したデータ`data_summary`を元のデータ`data1_long`にくっつけるような使い方もあります。それにより、もともとのデータに「地点ごとのCPUEの平均値・分散」データが加わり、CPUEを地点ごとの平均値で割ってそれぞれの地域ごとのCPUEのレベルをそろえたいような場合に使えます。
 
     data1_long <- data1_long %>%
-                    left_join(data_summary) %>%
-                    mutate(CPUE_standardized=CPUE/CPUE_mean) %>%
+                    left_join(data_summary) %>% # 平均値データをくっつける
+                    mutate(CPUE_standardized=CPUE/CPUE_mean) %>% # CPUEを基準化した新しい列を加える
                     print()
 
     # A tibble: 8 x 8

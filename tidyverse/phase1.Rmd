@@ -506,7 +506,7 @@ data1_areaA <- data1_long %>%
 
 ```{r, echo=TRUE}
 # data1_longのCPUEの平均値と分散を計算する
-data1_long %>% dplyr::summarise(mean_CPUE=mean(CPUE), var_CPUE=var(CPUE))
+data1_long %>% dplyr::summarise(CPUE_mean=mean(CPUE), CPUE_var=var(CPUE))
 ```
 
 第二引数は、「新しく作られる列名=ある列に対する処理（mean(CPUE)とか）」を書きます。複数の統計量を計算したい場合には、複数の命令を並べていけばいいです。ただ、上の例は非常に単純な例でそんなに実際的ではありません。`dplyr::summarise`は、実際には、グループ化のための関数`dplyr::group_by`でデータを「グループ化」してから使います。たとえば、平均値と分散を「地点(area)ごと」に計算したい場合は、
