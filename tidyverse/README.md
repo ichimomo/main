@@ -14,5 +14,5 @@
   - パイプ`%>%`の使い方
 - [6回目：データの横→縦変換](https://github.com/ichimomo/main/blob/master/tidyverse/day6.md)
   - tidyでないデータをtidyに変換する
-- [7回目：整然データの取り扱い](https://github.com/ichimomo/main/blob/master/tidyverse/day7.md)
-  - tidy dataを使ったデータの成型
+- [7回目：整然データを用いた解析の手順](https://github.com/ichimomo/main/blob/master/tidyverse/day7.md)
+  - 一般的なデータ解析の流れと、dplyrで提供される主な関数の説明
