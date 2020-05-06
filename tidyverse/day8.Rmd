@@ -95,14 +95,25 @@ data_example <- readr::read_csv("data_example.csv")
 g1 <- data_example %>% ggplot() +
              geom_point(aes(y=fishing_hours, x=lat_bin))
 
-g1 <- data_example %>% ggplot() +
+g1 <- data_example %>% 
+#  mutate(lon=lon*10) %>%
+  ggplot() +
              geom_point(aes(y=lat, x=lon)) +
-	     coord_sf()
+#        geom_sf(data = world2) +
+	      coord_sf()
 ```
 
 ```{r, echo=TRUE}
 (g1 <- data_example %>% ggplot() +
              geom_boxplot(aes(y=fishing_hours, x=factor(lon_bin))))
 
+library(maps)
+library(sf)
+world1 <- sf::st_as_sf(map('world', plot = FALSE, fill = TRUE))
+world2 <- sf::st_transform(
+  world1,
+  "+proj=laea +y_0=0 +lon_0=155 +lat_0=-90 +ellps=WGS84 +no_defs"
+)
+ggplot() + geom_sf(data = world2)
 
 ```
