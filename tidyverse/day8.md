@@ -99,7 +99,7 @@ CPUE、年、海域、水温のデータがあり、CPUEの標準化する前に
 
     g1 <- data_example %>% ggplot() +
       geom_point(aes(y=CPUE, x=Year)) +
-      theme_bw(base_size=18) # テーマを足す
+      theme_bw(base_size=14) # テーマを足す
     print(g1)
 
 ![](day8_files/figure-markdown_strict/unnamed-chunk-5-1.png)
@@ -107,12 +107,12 @@ CPUE、年、海域、水温のデータがあり、CPUEの標準化する前に
 プロット全体にテーマ（見栄え）を設定する関数はいろいろ用意されており、`theme_bw`のほかに、`theme_dark`や`theme_classic`などあります。これらも試してみましょう。ここでggplotの便利なところですが、さきに作成したグラフオブジェクト`g1`を再利用することができます。つまり、g1に、上書き設定したいコードを`+`で追加することで、中身は同じままで、追加されたコード分が上書きされたグラフを得ることができます。たとえば先程作成した`g1`オブジェクトに別のテーマを上書きします。
 
     # theme_dark() を試す
-    g1 + theme_dark(base_size=18)
+    g1 + theme_dark(base_size=14)
 
 ![](day8_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
     # theme_classic() を試す
-    g1 + theme_classic(base_size=18)
+    g1 + theme_classic(base_size=14)
 
 ![](day8_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
@@ -143,7 +143,7 @@ ggplotのオブジェクトでは`theme`に限らず、多くの要素を上書�
 
     data_example %>% ggplot() +
       geom_point(aes(y=CPUE, x=Year, color=Area)) +
-      theme_bw(base_size=18)
+      theme_bw(base_size=14)
 
 ![](day8_files/figure-markdown_strict/unnamed-chunk-11-1.png)
 
@@ -151,7 +151,7 @@ ggplotのオブジェクトでは`theme`に限らず、多くの要素を上書�
 
     data_example %>% ggplot() +
       geom_point(aes(y=CPUE, x=Year, color=Area, shape=Area)) +
-      theme_bw(base_size=18)
+      theme_bw(base_size=14)
 
 ![](day8_files/figure-markdown_strict/unnamed-chunk-12-1.png)
 
@@ -161,7 +161,7 @@ ggplotのオブジェクトでは`theme`に限らず、多くの要素を上書�
 
     data_example %>% ggplot() +
       geom_boxplot(aes(y=CPUE, x=factor(Year), color=Area, shape=Area)) +
-      theme_bw(base_size=18)
+      theme_bw(base_size=14)
 
 ![](day8_files/figure-markdown_strict/unnamed-chunk-13-1.png)
 
@@ -172,7 +172,7 @@ ggplotのオブジェクトでは`theme`に限らず、多くの要素を上書�
     data_example %>% ggplot() +
       geom_boxplot(aes(y=CPUE, x=factor(Year), color=Area, shape=Area)) +
       facet_wrap(.~Area) + # Area別に図を分ける
-      theme_bw(base_size=18)
+      theme_bw(base_size=14)
 
 ![](day8_files/figure-markdown_strict/unnamed-chunk-14-1.png)
 
@@ -182,7 +182,7 @@ ggplotのオブジェクトでは`theme`に限らず、多くの要素を上書�
     data_example %>% ggplot() +
       geom_boxplot(aes(y=CPUE, x=factor(Year), color=Area, shape=Area)) +
       facet_wrap(.~Area, scale="free_y") + # 図によってy軸の範囲を変える
-      theme_bw(base_size=18) +
+      theme_bw(base_size=14) +
       ylim(0,NA)　+ # 最小値をゼロにする
       theme(axis.text.x=element_text(angle = 90)) # 軸のラベルを回転する
 
@@ -197,7 +197,7 @@ ggplotのオブジェクトでは`theme`に限らず、多くの要素を上書�
 
     data_example %>% ggplot() +
       geom_point(aes(y=CPUE, x=Temp, color=Area)) +
-      theme_bw(base_size=18) +
+      theme_bw(base_size=14) +
       ylim(0,NA)　 # 最小値をゼロにする
 
 ![](day8_files/figure-markdown_strict/unnamed-chunk-16-1.png)
@@ -207,7 +207,7 @@ ggplotのオブジェクトでは`theme`に限らず、多くの要素を上書�
     data_example %>% ggplot() +
       geom_point(aes(y=CPUE, x=Temp, color=Area)) +
       facet_wrap(.~Area, scale="free_y") + 
-      theme_bw(base_size=18) +
+      theme_bw(base_size=14) +
       ylim(0,NA)　 # 最小値をゼロにする
 
 ![](day8_files/figure-markdown_strict/unnamed-chunk-17-1.png)
@@ -226,7 +226,7 @@ Rコードでは、data\_examleをパイプでggplotに渡す前に
          ggplot() +
            geom_boxplot(aes(y=CPUE, x=Year, fill=Temp_category)) +
            facet_wrap(.~Area, scale="free_y") +
-           theme_bw(base_size=18) +
+           theme_bw(base_size=14) +
            theme(legend.position="top")+
            ylim(0,NA)　 # 最小値をゼロにする
     print(g2)       
