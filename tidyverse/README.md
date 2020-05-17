@@ -18,4 +18,7 @@
   - 一般的なデータ解析の流れと、dplyrで提供される主な関数の説明
 - [8回目：とうとうggplot](https://github.com/ichimomo/main/blob/master/tidyverse/day8.md)
   - ggplotを使うときの心構えと例コード
+- [9回目：purrr〜もうforは使わない〜](https://github.com/ichimomo/main/blob/master/tidyverse/day9.md)
+  - forのかわりになるpurrrパッケージのmap系の関数を紹介します
+
 

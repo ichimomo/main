@@ -24,13 +24,13 @@ opts_chunk$set(echo=TRUE,
 opts_knit$set(fig.width=6,fig.height=3.5)
 ```
 
-## 9回目：purrr〜もうforもlapplyも使わない〜
+## 9回目：purrr〜もうforは使わない〜
 
-第９回目はtidyverseの中のパッケージの一つpurrrで提供されるさまざまな`map_何とか`の関数について解説します。purrrは、通常のRにおけるapply系の関数forループに代わる機能を提供します。purrrについてはいろいろ便利な機能があるようですが、私も代表的なものしか使ったことがないので、知っている範囲で解説します。網羅的な機能の一覧は[chetsheet](https://github.com/rstudio/cheatsheets/raw/master/purrr.pdf)を見るとわかりやすいと思います。
+第９回目はtidyverseの中のパッケージの一つpurrrで提供されるさまざまな`purrr::map_何とか`の関数について解説します。purrrは、通常のRにおけるapply系の関数forループに代わる機能を提供します。purrrについてはいろいろ便利な機能があるようですが、私も代表的なものしか使ったことがないので、知っている範囲で解説します。網羅的な機能の一覧は[chetsheet](https://github.com/rstudio/cheatsheets/raw/master/purrr.pdf)を見るとわかりやすいと思います。
 
 ### map系関数の基本
 
-map系関数の基本は、`map_何とか(リスト, 関数)`という形になります。これによって、リストの中の各要素に一括して関数を適用することができます。図であらわすとこんなかんじ（cheatsheetからの引用）です。
+map系関数の基本は、`purrr::map_何とか(リスト, 関数)`という形になります。これによって、リストの中の各要素に一括して関数を適用することができます。図であらわすとこんなかんじ（cheatsheetからの引用）です。
 
 <img src="apply.JPG" width="300px">
 
@@ -50,16 +50,16 @@ example_list
 purrr::map(example_list, mean)
 ```
 
-それにより、example_listの1, 2, 3番目の要素に関数`mean`が適用された結果をリスト形式で得ることができました。これがmap系関数の基本的動作です。ただ、`map`をそのまま素朴に使うことはあまりなく、`map_何とか`という「何とか」と合わせてつかうことが多いです。「何とか」は、mapしたあとの結果を「どのように整形するか」を示します。さきの例では、`mean`の結果はどれも数値になっているので、わざわざリストで返さなくても、数値のベクトルとして返してほしいです。その場合には、`map_dbl` (結果をdouble形式のベクトルで返す)を使います。
+それにより、example_listの1, 2, 3番目の要素に関数`mean`が適用された結果をリスト形式で得ることができました。これがmap系関数の基本的動作です。ただ、`purrr::map`をそのまま素朴に使うことはあまりなく、`purrr::map_何とか`という「何とか」と合わせてつかうことが多いです。「何とか」は、mapしたあとの結果を「どのように整形するか」を示します。さきの例では、`mean`の結果はどれも数値になっているので、わざわざリストで返さなくても、数値のベクトルとして返してほしいです。その場合には、`purrr::map_dbl` (結果をdouble形式のベクトルで返す)を使います。
 
 ```{r, echo=TRUE, fig.width=7,fig.height=5}
 # それぞれの要素の平均値を計算
 purrr::map_dbl(example_list, mean)
 ```
 
-この場合は、結果が名前付きのベクトルで返ってきます。同様の挙動を示す仲間はpurrr::map_lgl(論理値), map_int(整数), map_chr(文字列)があります。
+この場合は、結果が名前付きのベクトルで返ってきます。同様の挙動を示す仲間はpurrr::map_lgl(論理値), purrr::map_int(整数), purrr::map_chr(文字列)があります。
 
-さらに、返り値が一つではなくquantileのように複数ある場合には、結果をデータフレーム形式にまとめて返す`map_dfr`を使います。quantileに渡す引数は、mapの3番目以降の引数として渡します。
+さらに、返り値が一つではなくquantileのように複数ある場合には、結果をデータフレーム形式にまとめて返す`purrr::map_dfr`を使います。quantileに渡す引数は、mapの3番目以降の引数として渡します。
 
 ```{r, echo=TRUE, fig.width=7,fig.height=5}
 # それぞれの要素の5,50,95パーセンタイルを計算
@@ -76,11 +76,9 @@ tmpfunc <- function(x) quantile(x, probs=c(0.05,0.5,0.95)) %>%
 purrr::map_dfr(example_list, tmpfunc, .id="id")
 ```
 
-さらに、いちいち新しい関数に名前をつけるのが大変なので、それを省略した以下のような表現がよく用いられます。自分で作るようになるのには慣れが必要ですので、最初は自前関数を定義→mapで使う、という流れに慣れたら省略形を使っていくのがよいでしょう。function(x)の中身は{}で区切れば何行でもRコードをつなげて書けるので、これがforループのかわりになります。
+さらに、いちいち新しい関数に名前をつけるのが大変なので、それを省略した以下のような表現がよく用いられます。
 
 ```{r, echo=TRUE, fig.width=7,fig.height=5}
-# 関数を自作
-tmpfunc <- 
 # mapの中で関数を定義（＝無名関数）
 purrr::map_dfr(example_list,
                function(x) quantile(x, probs=c(0.05,0.5,0.95)) %>%
@@ -94,6 +92,8 @@ purrr::map_dfr(example_list,
                .id="id")
 ```
 
+自分で作るようになるのには慣れが必要ですので、最初は自前関数を定義→mapで使う、という流れに慣れたら省略形を使っていくのがよいでしょう。function(x)の中身は{}で区切れば何行でもRコードをつなげて書けるので、これがforループのかわりになります。
+
 ちなみに、forループを使って書く場合には
 
 ```{r, echo=TRUE, fig.width=7,fig.height=5}
@@ -105,7 +105,7 @@ for(i in 1:length(example_list)){
 res
 ```
 
-みたいな感じになります。
+みたいな感じになります。forにも慣れていない人はまずforから勉強すると良いと思います。g
 
 ### map系関数の実践
 
@@ -138,9 +138,9 @@ list(res_MSY_HSL2, res_MSY_HSL1) %>% # 一つのリストにまとめる
    purrr::map_dfr(function(x) x$summary %>% dplyr::filter(RP_name=="MSY"))
 ```
 
-ここで、`purrr::map_dfr`の第一引数は、MSY管理基準値の計算結果のリスト、第二引数は`function(x)`からはじまる無名関数になります。無名関数は、この場所だけで使う関数で、引数x（→`res_MSY_HSL2`や`res_MSY_HSL1`が順番に入ってくる）に対する処理を定義したものです。
+ここで、`purrr::map_dfr`の第一引数は、MSY管理基準値の計算結果のリスト、第二引数は`function(x)`からはじまる無名関数になります。
 
-また、frasyrでは「リスト形式の結果」を「tidyなデータフレーム」へ変換するutility関数`convert_vpa_tibble`, `convert_SR_tibble`, `convert_future_table` (次期バージョンでは`convert_future_tibble`へ改名予定)が用意されています。これらの関数を使って、複数のVPAや将来予測結果をtidyデータフレームにしてくっつける、という操作もかんたんにできます。たとえば、、
+また、frasyrでは「リスト形式の結果」を「tidyなデータフレーム」へ変換するutility関数`convert_vpa_tibble`, `convert_SR_tibble`, `convert_future_table` (次期バージョンでは`convert_future_tibble`へ改名予定)が用意されています。これらの関数を使って、複数のVPAや将来予測結果をtidyデータフレームにしてくっつける、という操作もかんたんにできます。たとえば、
 
 ```{r, echo=TRUE, fig.width=7,fig.height=5}
 # 2つの再生産関係の推定結果をリストに入れてtidy形式に直してくっつける
@@ -183,36 +183,40 @@ result_set <- candidate_set %>%
 ### まとめ: for を使ってもいいけどmapもいいよ
 
 今回はforループにかわる機能を提供するpurrrのmap系の関数を紹介しました。
-これを使うと、サブタイトルにあるようにforループを使わずに繰り返し処理をおこなうことができます。ただ、forループを全く使わない処理が、とくに可読性という意味で、優れているかどうかはちょっと疑問です。スピードの面でもべつにそんなに速い！というわけではないです。
+これを使うと、forを使わずに繰り返し処理をおこなうことができます。
+
+ただ、可読性という点を考えると、map系の関数がforループを全く使わない処理よりも優れているかどうかはちょっと疑問です。また、スピードの面でもべつにそんなに速い！というわけではないです（むしろ遅い？）。
 
 ```{r, echo=TRUE, fig.width=7,fig.height=5}
 N <- 500000
 # mapを使う
-system.time(a1 <- map_dbl(1:N, function(x) mean(x:(x+10))))
+system.time(a1 <- purrr::map_dbl(1:N, function(x) mean(x:(x+10))))
 # forを使う
 a1 <- numeric() ; system.time(for(i in 1:N) a1[i] <- mean(i:(i+10)))
 ```
 
 purrrを使う利点・使いたい場面としては以下のような点が考えられると思います。
 
-- `convert_vpa_tibble`のように、雑然としたリストをデータフレームに整形する関数がある場合`map::dfr`で一括処理して整然データを作る
-- `i`、`res <- NULL`のようにforループの中でしか使わない中間変数を作ることを避けられるので、余計なバグを防ぐことができる
+1. `convert_vpa_tibble`のように、雑然としたリストをデータフレームに整形する関数がある場合`map::dfr`で一括処理して整然データを作る
+2. `i`、`res <- NULL`のようにforループの中でしか使わない中間変数を作ることを避けられるので、余計なバグを防ぐことができる
+
+2番目の点は結構重要で、あとから使うことのない中間変数を作ることで、バグが入り込みやすくなります。以下、バグの例です（どこが悪いか考えてください）。
 
 ```{r, echo=TRUE, fig.width=7,fig.height=5, eval=FALSE}
-# 中間変数を作ることによるバグの例1（どこが悪いか考えてください）
+# 例1
 res <- NULL
 for(i in 1:length(example_list)){
     res <- quantile(example_list[[i]], probs=c(0.05,0.5,0.95))
 }
 
-# 中間変数を作ることによるバグの例2（どこが悪いか考えてください）
+# 例2
 res <- NULL
 for(i in 1:length(example_list)){
     res <- quantile(example_list[[x]], probs=c(0.05,0.5,0.95))
 }
 ```
 
-なので、必ずしもforが悪いというわけでなく、可動性を重視するような場合には、forを使うのも良いでしょう。状況にあわせて使い分けたらいいと思います。
+それぞれの手法はそれぞれ良いところがありますので、状況にあわせて使い分けたらいいと思います。
 
 
 
