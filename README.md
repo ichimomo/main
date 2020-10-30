@@ -1,4 +1,5 @@
-このページのHP版　https://ichimomo.github.io/main/
+[このページのHP版]　(https://ichimomo.github.io/main/)
+[昔のホームページ]　(https://ichimomo.github.io/main/home-page/index.html)
 
 ### [frasyr](https://github.com/ichimomo/frasyr)
    - 1系資源のVPA計算・管理基準値計算・将来予測シミュレーションを行うための関数を集めたRパッケージ
