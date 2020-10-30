@@ -1,0 +1,39 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<link href="../style.css" rel="stylesheet" type="text/css">
+<title>再評価使用例</title>
+</head>
+
+<pre>
+<code>
+# vout1 = VPAの計算結果
+# yprs.year.shortr = RPSの参照年
+
+# Frecだけで再評価する場合
+# 
+#  こちら，通常のABC計算（ABC算定年が2018年，目標年が2028年）  
+# この場合，2017年のFがcurrent F, 2018年以降のFがFrecとなる 
+
+fout1<-future.vpa(vout1,multi=0.5,waa.year=2016,Frec=list(stochastic=FALSE,future.year=2028,Blimit=64000),ABC.year=2018,nyear=20,rec.arg=list(rps.year=rps.year.shortr))
+
+# そして再評価（ABC算定年が2018年，目標年が2028年）  
+# 再評価では，2017年以降のFをFrecとする
+# RVPAでは ABC.year以降年のFがFrec  に置き換わるのでABC.yearを1年ずらせばよい
+
+fout1r<-future.vpa(vout1,multi=0.5,waa.year=2016,Frec=list(stochastic=FALSE,future.year=2027,Blimit=64000),ABC.year=2017,nyear=20,rec.arg=list(rps.year=rps.year.shortr))
+
+# そして再々評価は？=> 2016年のFがFrecに置き換わる．
+# ただ，2016年のFはすでにVPAの結果として出力されているので，普通にやると2016年のFはVPA結果が使われてしまう
+# そのため，VPA結果から最終年のFの値を０に置き換える必要がある
+
+vout1r <- vout1 # VPA結果を再々評価用のvpa1rにコピー
+vout1r$faa["2016"] <- 0 # 2016年のFを0に置き換える．0を入れておくと，将来予測のFが使われる仕様になっている
+fout1rr <- future.vpa(vout1r,multi=0.5,waa.year=2016,Frec=list(stochastic=FALSE,future.year=2026,Blimit=64000),ABC.year=2016,nyear=20,rec.arg=list(rps.year=rps.year.shortr),start.year=2016) # 将来予測の開始年を2016年とする（そうすると2015年のnumbers at ageとF at ageを使って前進計算をし，2016年のFはFrecを使うことになる）．また，ABC.year=2016, future.year=2026に変更．
+
+</code>
+</pre>
+

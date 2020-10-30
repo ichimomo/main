@@ -1,0 +1,100 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<link href="../style.css" rel="stylesheet" type="text/css">
+<title> Package of 'doRLP'</title>
+</head>
+
+<body>
+<h3> Package of 'doRLP'   </h3>
+
+<p>
+<mytitle>Change Log:</mytitle> <br>
+<ul><ul>
+<li> 5th Oct 2013. Upload the package
+</ul></ul>
+
+</p>
+
+<p>
+<mytitle>Download and Install:</mytitle> <br>
+[source code] <a href="doRLP_1.0.tar.gz"> doRLP_1.0.tar.gz </a> <br>
+   <ul>
+     <li> Install the 'tar.gz' ball by R command such as 
+<pre>
+<code> 
+command line> R CMD INSTALL glm.tree_1.0.tar.gz
+</code></pre>
+   </ul>
+
+<br><br>
+[For windows] Sorry, currently the package for windows version is not available <br>
+</p>
+
+<p>
+<mytitle> Required additional package:</mytitle> snow, snowfall, (<a href="sstools.html"> sstools </a>) <br>
+</p>
+
+<p>
+Main functions
+<ul>
+  <li> get.data ; conduct simulation of age-structured  population dynamics and get fisheries data
+  <li> get.ssfile ; create data file of Stock Synthesis (v2.23b)
+  <li> do.all ; Wrapper function above the two functions and do estimation & likelihood profile by each replication. Need additional files for configuration for SS estimation and other miscellaneous files. 
+</ul>
+</p>
+
+<p>
+Procedures
+<ul> 
+  <li> Install 'wine' if conducting the simulation in Linux platform. 
+  <li> Required packages, snow, snowfall (if using multi-core) and sstools (can be downloaded from <a href="sstools.html"> here </a>), and this package
+  <li> Create empty folder (e.g. 'white') for simulation
+  <li> Move to the 'white' folder, and create new folder named by 'orgrun_tmp'
+<li> Put needed files under 'orgrun_tmp'. An example folder can be downloaded from here, except for executable file for SS. Executable file for SS can be downloaded from the official HP.  
+  <ul>
+    <li> control file for SS named by "BLUE.CTL" for normal estimation, and "BLUE_LP.CTL" for likelihood profile. The names of the control files should be as the name.  
+    <li> starter.ss and other miscellaneous files
+    <li> profilevalues.ss ; specifying fixed values when conducting likelihood profiles
+    <li> executable file for SS (ss3.exe)
+  </ul></ul>
+<li> under the 'white' folder, run do.all
+</p>
+
+<p>
+sample code
+<pre>
+<code>
+# "do.all" does all procedures of create data, write dat file for SS, condurct SS and likelihood profiles.
+tmpres <- do.all(nsim=5, # number of replications
+                 Rsigma=0.6, # CV of recruitment deviations assumed int the true population
+                 cpue.error=rep(0.2,2), # CV of observation errors in abunance indices for each fishery (in the true population)
+                 obs.cpue=rep(0.2,2), # CV of observation errors inputted to SS dat file (in SS)
+                 Nlen=rep(400,2), # Number of sample size for multinomial observational errors in the length composition data (in the true population)
+	         Nlen.ss=rep(400,2), # Number of sample size inputted to SS dat file (in SS)
+                 Fall=0.1, # Apex fishing mortality for the 1st fleet
+                 mc=2, # number of threds used for the calculations
+                 is.likeprof=T) # if TRUE, do likelihood profiles
+# some arguments are shared with the arguments specified to get.data. 
+# time-varying assumptions are controlled by options of get.data 
+</code></pre>
+</p>
+
+
+<p>
+<mytitle>Past packages: </mytitle> 
+<ul>
+<li>
+</ul>
+</p>
+
+
+<hr>
+<center>
+<a href="../index.html"> Back to the top page </a>
+</center>
+
+</body>

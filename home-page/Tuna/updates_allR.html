@@ -1,0 +1,331 @@
+<body bgcolor="ivory" link="midnightblue" vlink="royalblue">
+<font color="black">
+<title>all.R更新履歴</title>
+</head>
+
+<body>
+<h3>all.R更新履歴</h3>
+
+
+<ul>
+<li><b>2010/2/02 </b> <br>
+   <ul>
+      <li> <font color="red">do.bootstrap.ss3 </font> 
+         <ul>
+           <li>オプション等を改良。nbootの引数を与えれば、その後、starter.ssは勝手に変更されるようにした。
+         </ul> </ul>
+
+<li><b>2010/2/02 </b> <br>
+   <ul>
+      <li> <font color="red">allplot.ss </font> 
+         <ul>
+           <li>最新版のRに対応（以前のものは、2.9?以降、使えなくなっていた）
+           <li>関数名をallplot.ss2からallplot.ssに変更（以前の名前もまだ使えますが）
+           <li>資源評価の年代が異なる結果も重ねてプロットできるようになった。この場合、<font color="red">時系列の長いほうのファイルを先に</font>並べてください。
+           <li>そのほか、minor bug fixes
+      </ul> <br><br></ul>
+
+
+<li><b>2009/5/27 </b> <br>
+   <ul>
+      <li> <font color="red">allplot.ss2 </font> 
+         <ul>
+           <li>昨日のアップデート版は日本語コードに問題があり、windowsからは読めなかったのを修正。
+           <li>Catch, harvesiting rateのプロットがきちんとできるように修正
+           <li>漁獲方程式を解いて計算するF at ageのプロットも復活
+         </ul>
+      <li> <font color="red">do.bootstrap.ss3</font> を追加。SS version2 に対応するブートストラップ用の関数はdo.bootstrap.ss2に変更。ss3用のdo.bootstrap.ss3では、'namesfile2='の引数を追加。こちらの引数には、実際にブートストラップを行う際に用いるスターターファイルの名前を入れる。実際にブートストラップをする用のスターターファイルには、11行目をゼロにして、1行目を data-boot.ss としておいてください。Starter.ssから自動的にブートストラップ用のスターターファイルを作成しても良かったんだけど、新しいバージョン（SS3から？）では、スターターファイルの1行目のコメントアウトの行も実行に必要となったようで、コメントの処理が面倒くさかったので。
+     <pre><code>
+          do.bootstrap.ss3(namesfile="Sterter.SS",namesfile2="Sterter_boot.SS") 
+     </code></pre>
+
+      <li> <font color="red">autorun.ss2</font> この関数はもうパッケージに含まれないので注意（SS3に対応したら含めるつもり）。
+      <li> <font color="red">将来予測用関数</font> パッケージには含まれないが、SS3.30への対応するアップデートは完了。
+      </ul> <br><br>
+
+<li><b>2009/5/26 </b> <br>
+   <ul>
+      <li> <font color="red">allplot.ss2 </font> SS3.03まで対応（暫定版）。
+         <ul>
+           <li>3.03から、体長＆年齢組成のbin毎の結果（exp vs obs）は別ファイル(CompReport.SSO)に出力されることになった。そのため、体長のフィットを見たい場合(length.on=Tのとき)は、 'compfile=' で体長組成のフィットを示すファイルを別に指定する必要があるので注意。
+     <pre><code>
+          allplot.ss2(repfile="Report.SSO",compfile="CompReport.SSO") # compfileのオプションを指定
+          allplot.ss2(repfile=c("Report.SSO_newM","Report.SSO_baseM"),compfile=c("CompReport.SSO","CompReport.SSO")) # 複数の結果を重ね書きしたいとき
+     </code></pre>
+
+	   <li>ss2とss3、別バージョンからの出力を重ね書きすることはできるが、体長へのフィットの表示だけは、重ね書きすることはできない。
+     <pre><code>
+          allplot.ss2(repfile=c("Report.SSO","ss2.rep"),length.on=F) # バージョンが異なるファイルを重ね書きしたい場合は、length.onのオプションをFにする
+     </code></pre>
+           <li> vnumberの引数を廃止。バージョン番号は、repfileを読んで自動的に判断する。
+           <li> Catch, harvesiting rateのプロットはまだ正確でない。（近日中にアップデート予定）
+         </ul>
+      </ul> <br><br>
+
+
+<li><b>2008/4/30 </b> <br>
+   <ul>
+      <li> <font color="red"> autorun.ss2 </font> ctlfile=NULL のオプションを追加。ここでctlfileを指定すれば、starter.ss2で指定されているcontrol file でなく、引数で指定された control file を使ってss2を実行する。例えば、ctl1.ctl,ctl2.ctl ,ctl3.ctl ,ctl4.ctl という４つのファイルの計算をしたい場合は以下のようにforループで実行できる。filename.storedのオプションで結果のファイル名 ss2.repやss2.par等を他の名前として保存しておくように設定しないと、繰り返し計算したときに、前の結果は全て上書きされてしまうので注意すること。また、filename.storedの引数は、要素２のベクトルで、filename.stored[1]はファイルを保存するフォルダ、filename.stored[2]はファイル名となっている。以下の例では、repfileというフォルダの下に、ctl1.rep, ctl2.rep.... というファイルが生成される。 <br> <br>
+      for(i in 1:4){ <br>
+           doautorun(ctlfile=paste("ctl",i,".ctl",sep=""),filename.stored=c("repfile",paste("ctl",i,sep="")), その他のオプション) <br>
+  	   } <br><br>
+      <li> <font color="red"> autorun.ss2 </font>  引数のデフォルト値を以下のように変更。store.repfile=T, effN.op=2, adjust.cpuesd=FALSE。
+      </ul> <br><br>
+
+
+<li><b>2008/4/28 </b> <br>
+   <ul>
+      <li> <font color="red"> autorun.ss2 </font> effN.op=2のとき、effective sample sizeへのmultiplierの係数をprocess_track.txtに出力するようにした
+      </ul> <br><br>
+
+
+<li><b>2008/4/22 </b> <br>
+   <ul>
+      <li> <font color="red"> do.boostrap, autorun.ss2 </font> β版 all.Rbetan のアップ
+      </ul> <br><br>
+
+
+<li><b>2008/4/18 </b> <br>
+   <ul>
+      <li> <font color="red"> do.boostrap </font> 4/17更新バージョンでできたバグを修正
+      <li> <font color="red"> autorun.ss2 </font> 4/10更新バージョンでできたバグ(期待どおりのstarter.ss2_lastが保存されない）を修正
+      </ul> <br><br>
+
+
+<li><b>2008/4/17 </b> <br>
+   <ul>
+      <li> <font color="red"> all.R ファイルの置場所 </font> makairaで、/work/pbf/SS2/ALLRdir/ 以下に変更。また、アップロードするときは all.R と、日付と時間の入った同じファイル（例： all.R08041614）の二つをアップロードします。新しいバージョンがでたとき、all.Rは常に最新のものに置き換わります。昔のバージョンは、all.RXXXXのファイルとしてそのまま残されます。最新のバージョンでバグが出て動かなくなってしまった場合は、古いものを使ってしのいで下さい。<br><br>
+
+      <li> <font color="red"> allplot.ss2 </font> : 
+      <ul> 
+      <li>複数のrepfileを重ね描きするとき、repfileの引数をファイル名のベクトルとして渡すことが可能に。<br>
+      <例> allplot.ss2(c("ss2-1.rep","ss2-2.rep","ss2-3.rep")) <br>
+      それに伴って、allplot.ss2内のオブジェクト名等を相当変更したので、もしかしたら何かバグがまだあるかもしれないので、注意！
+      <li>年級群ごとのSSBを色分けして表示する関数（plot.cohortSSB(repfile=NULL)を追加。また、allplot.ss2でも、plot.cohortSSB(repfile=NULL)の結果を２枚目に出力するように変更。repfileを複数指定する場合は、複数個のプロットが出力される。<br>
+             <img src="yearclass.jpg", width=60%,height=60%> <br>
+      <li> dev.type の、"html" のオプションを廃止
+      <li> 年齢別選択率 (aselect.on)、体長別選択率 (select.on)のとき、同じ選択率が複数出力される冗長性を排除。（注！ aselect.on=Tで、年齢別選択率のグラフも出力できます）
+      <li> FのプロットやSPRのプロットを行うとき、今までは、最初のファイルの結果のみを示していたが、複数の結果を重ね描き（又は複数の図を出力）するようにした
+      <li> 複数の図を重ね描きする場合、２枚目の表示で凡例を出力するようにした
+      </ul> <br>
+    <li> <font color="red"> try.nofisheffects & plot.nofishbio </font> <br>
+     漁獲がない場合に想定されるSSBを漁業別に推定する関数。try.nofisheffectsを実行する場合は、
+      <ul>
+        <li> 推定されたパラメータの入っているss2.par
+	<li> 3行目を１（ss2.parを読む）、7行目をゼロ（計算をしない）としたstarter.ss2
+	<li> その他、必要なdatファイルなど
+	</ul>
+	が必要です。関数を実行すると、
+      <ul>
+        <li> datファイルを読んで、「1番目からi番目までの」漁業による漁獲をゼロにしたdatファイル（Fminus1toXX.dat)を作成
+	<li> ss2_org.repには、どの漁業もゼロにしない場合の結果が入れられる
+	<li> 作成したdatファイルをもとに、SS2を実行（phaseがゼロなので推定は行わない)
+	<li> 結果は、Fminus1toXX.repに格納
+	<li> もしis.plot==TRUEなら、図も表示
+	<li> 返り値はinvisibleで与えられ、漁業＋１個分のtime seriesのリスト(biom.list)と、漁業＋１個列のSSBの行列(biom.mat)が返される
+	</ul>
+      使いかたは以下のとおり。！ディレクトリ内でss2を実行しますので、結果のファイル ss2.rep 等は上書きされますので、ご注意下さい！
+      <ul>
+       <li> a <- try.nofisheffects()  # 特に引数は必要ない
+       <li> plot.nofishBio(a$biom.mat,datfile="minsF1to1.dat")  # aを使って、図だけ出したいとき
+       </ul>
+       結果では以下のような図が作成できます。 <br>
+       <img src="nofish.jpg", width=60%,height=60%> <br>
+       </ul>
+       
+<li><b>2008/4/15 </b> <br>
+   <ul>
+      <li> <font color="red"> allplot.ss2 </font> : ask.repeatの実行時のバグを修正のほか、いくつかのマイナーチェンジ
+   </ul>
+
+<li><b>2008/4/11-2 </b> <br>
+   <ul>
+      <li> <font color="red"> allplot.ss2 </font> : 年齢・年代別のFを平均したプロットを追加。デフォルトで出ます。
+   </ul>
+
+<li><b>2008/4/11 </b> <br>
+   <ul>
+      <li> <font color="red"> doautorun </font> : SS2実行時、一回目のみss2.arg1stの引数を参照するオプション（ss2.arg1st）を追加。この引数を指定しない（デフォルトのままで""になっている）ときは、ss2.argによる引数をつける
+      <li> <font color="red"> doautorun </font> : ask.repeat=Tにしたときの挙動を変更。
+       <ol> 
+       <li> 計算回数が max.calc[2]回に達したら、現在の max gradient、有効サンプルサイズのカイ二乗値、（effN.op=2のとき）有効サンプルサイズへの乗数を表示し、これ以上有効サンプルサイズの置き換えを行うか質問
+         <ul>
+	 <li> Yesのとき -> "How many?" で、あと何回有効サンプルサイズの置き換えを行うかを指定 -> 指定した回数だけ有効サンプルサイズを置き換える。計算が終ったら、(1)に戻る
+	 <li> Noのとき -> 有効サンプルサイズの置き換えを行わないで、SS2を走らせるかどうか質問
+	   <ul> 
+	    <li> Yesのとき -> "How many?" で、最大何回計算を行うか質問 -> 指定した回数を上限にSS2を走らせ、回数が上限に達する 又は max gradientが十分小さくなったら終了 -> 最後にHessian行列を計算して本当に終了
+	    <li> Noのとき -> さいごにHessian行列を計算して終了
+	   </ul>
+	   </ul>
+	   </ol>
+
+      <li> <font color="red"> allplot.ss2 </font> : 出力に、年齢別・漁業別Fのプロットを追加。（!! 複数ファイルの重ね描きには対応していません !! 複数ファイルを指定した場合、最初のファイルの結果のみプロっとされます）
+      <li> <font color="red"> allplot.ss2 </font> : バブルプロットの塗りの色をピンクに変更。
+      </ul> <br> <br>
+<li><b>2008/4/10 </b> <br>
+   <ul>
+      <li> <font color="red"> doautorun </font> : ss2 のエラー等でdoautorunを ctrl-C や Esc などで強制終了させた場合、starter.ss2がオリジナルのものと置き換わってしまう現象を回避。（以前のバージョンからこの回避措置が働いていると思っていたが、on.exitの使いかたを間違っていたため、働いていなかったのを修正）
+  </ul><br> <br>
+
+<li><b>2008/4/7-2 </b> <br>
+   <ul>
+      <li> <font color="red"> allplot.ss2 </font> : bubble plotのbubbleの半径を、sqrt(pearson residual)に変更。また、横軸と縦軸のスケールを調整。
+      <li> <font color="red"> doautorun </font> : effN.op=2における挙動を調整。それにともなって、effN.op=2のときだけ有効な引数（effN.arg、省略可）を追加。 effN.argはlistとして以下のように与えてください。<br>
+      effN.arg=list(zero.intercept=0,by.fleet=TRUE,conversion.criteria=0.1) <br>
+      <ul>
+      <li>zero.intercept: effective sample size の predとobsを回帰するときに切片をゼロにするかどうか。<br>
+      <li>by.fleet: 回帰を漁業ごとにするか、しないか <br>
+      <li>conversion.criteria: ここで与えられた値がeffective sample sizeの収束基準となる。例えば、この値が0.1のとき、全ての漁業の effN/obsN が0.9から1.1の間に収まったとき、これ以上、サンプルサイズの置き換えを行わない。（まだ動きません）<br>
+      </ul>
+      デフォルトで与えられている引数は、一般的に、手動でLength lambdaを変化させる場合と同じ挙動を示します。
+また、doautorunの返り値を明示的に指定すると、返り値の中に、effNとobsNを回帰したときの係数（傾きと切片）が記録されていますので御参照下さい。
+      </ul><br> <br>
+
+
+<li><b>2008/4/7 </b> <br>
+   <ul>
+      <li> <font color="red"> doautorun </font> : いくつかの引数の名前を変更。変更点は以下のとおり。
+        <ul>
+	<li> reserved.file -> store.repfile
+	<li> replace.ctl -> adjust.cpuesd
+	<li> fleet.exclude -> exclude.effNfleet
+	<li> reserved.name -> filename.stored
+	</ul>
+      <li> <font color="red"> doautorun </font> : 新しい引数 ask.repeat を追加。これをtrueにしておくと、max.calc[2]回計算をしても収束基準に満たなかった場合、もうmax.calc[2]回計算するか尋いてくれる。
+      <li> <font color="red"> allplot.ss2 </font> : Max-FとAve-Fのプロットをやめて、かわりにSPRとYPRをプロットすることに。
+
+   </ul><br> <br>
+
+<li><b>2008/3/27 </b> <br>
+   <ul>
+      <li> <font color="red"> allplot.ss2 </font> : 体長組成のフィットの最後に、バブルプロットを追加。各binごとの期待値と観測値の差を年・漁業ごとにプロット。また、引数のdatfileに、使ったdatfileの名前を入れると、fleetの名前が図に表示されるようになった。その他、細かい改善。
+   </ul>
+
+<li><b>2008/3/24 </b> <br>
+   <ul>
+      <li> <font color="red"> doautorun </font> : マイナーなバグをフィックス
+   </ul>
+
+<li><b>2008/3/21 </b> <br>
+   <ul>
+      <li> <font color="red"> doautorun </font> : doautorunの後に出力されるprocess.trackのグラフをより詳細に。（回数ごと・漁業ごとの有効サンプルサイズの箱形図、CPUEのSD、尤度のプロット）
+      <li> <font color="red"> plot.processgraph </font> : doautorun内で使われているprocess.track.pdfの出力用の関数。少し細かい指定（有効サンプルサイズの縦軸の範囲 smp.lim, CPUEの縦軸の範囲 cpue.lim, デバイスのタイプ dev.type="pdf" or それ以外=x11)を指定できる。使い方は以下の通り。<br>
+      a <- doautorun() <br>
+      plot.processgraph(a,smp.lim=c(0,100))
+   </ul>
+
+
+<li><b>2008/2/26 </b> <br>
+   <ul>
+      <li> <font color="red"> allplot.ss2 </font> : 年齢組成のフィット (agecomp.on=T, 体長の組成のフィット（length.on) とどちらか一方)と、年齢別の選択率 (aselect.on=T) を表示できるように引数を追加
+      <li> <font color="red"> doautorun </font> : process.graph=T (デフォルト) で、各計算実行前の時点での、CPUEのSDの推移のグラフと有効サンプルサイズの箱形図を process_track.pdfに出力
+   </ul>
+
+
+<li><b>2008/2/22 </b> <br>
+   <ul>
+      <li> <font color="red"> getAgecomp.ss2.2 (in allplot.ss2) </font> : バージョンv2.00oのss2.rep内のcomposition databaseで、出力が増えたことへの対応。ss2.repの一行目のプログラムのバージョンが"2.00o"になっていることで、読み込む列の数を調整している。
+   </ul>
+
+
+<li><b>2008/1/18 </b> <br>
+   <ul>
+      <li> <font color="red"> doautorun </font> : Fix the bug for plotting CPUE in the yesterday's version.  
+   </ul>
+
+<li><b>2008/1/17 </b> <br>
+   <ul>
+      <li> <font color="red"> doautorun </font> : Add the new argument of 'fleet.exclude': to determine the number of fleet where replacement of effective sample size won't be conducted. (ex. fleet.exclude=8 or fleet.exclude=c(8,9) etc.)
+   </ul>
+
+<li><b>2008/1/16 </b> <br>
+   <ul>
+      <li> <font color="red"> allplot.ss2 </font> : ss2.repの出力で、1.#QNANがCPUEのところ(INDEX_2)以下に出てくる場合、ファイルをうまく読み込めなくなるバグを修正。INDEX_2以外のところで1.#QNANが出てくるときには、対処していませんが、要望があれば対処します。
+   </ul>
+
+<li><b>2007/11/24 </b> <br>
+   <ul>
+      <li> <font color="red"> do.bootstrap </font> : forecast report (SS2-forecast-report.txt) was also reserved by the name of "SS2-forecastrep",i+additive.num,".rep".  
+   </ul>
+
+
+<li><b>2007/11/21-2 </b> <br>
+   <ul>
+      <li> <font color="red"> doautorun </font> において、将来予測をやる/やらないのコントロールの方法を変更。毎回、デフォルトのstarter.ss2で指示されている通りに、forecastは行う（または行わない）。
+   </ul>
+
+
+<li><b>2007/11/21 </b> <br>
+   <ul>
+      <li> <font color="red"> cal.averageF </font> において、引数 Fmulti (= 1) を追加。replace.forecast=Tの場合、forecast.ss2に書き込むFの行列に、Fmultiで指定されたスカラー量が乗じられるようにした
+      <li> <font color="red"> allplot.ss2 </font> において、引数 len.residual.plot (= F) を追加。このオプションがTの場合、体長分布のピアソン残差のプロットを行う。サイズデータが異常に多い場合、また、複数のrepfileを重ね書きする場合は、ファイルサイズが異常に大きくなるため、デフォルトではこのオプションははずす。
+   </ul>
+
+
+<li><b>2007/11/19</b> <br>
+   <ul>
+      <li> 将来予測するとき、最近年の何年かのFを季節ごと・fleetごとに平均した行列を計算する関数 <font color="red"> cal.averageF </font> を追加。また、replace.forecast=Tで、既存のforecast.ss2の13行目以降を、計算したFの行列で置き換えることができる。
+  
+      <p> 引数のリスト
+      <ul>
+         <li>repfile = "ss2.rep" ---- repfileの名前
+	 <li>target.year = 2002:2004 ---- Fを平均したい年のベクトル
+	 <li>write.graph = F ---- 平均したFについて、グラフを書くかどうか
+	 <li>replace.forecast = F ---- ここのオプションをTにした場合、引数forecastfileの13行目以降を、平均したFのベクトルに置き換えた新しいforecastfileを作成する。もともとのforecast.ss2はforecast.ss2_oにある。<u>ここに入力されたF、そのまんまの値で将来予測を行いたい場合は、starter.ss2のForecast optionを「４」に設定する。</u>
+	 <li>forecastfile = "forecast.ss2" ---- replace.forecastがTの場合、読むforecast fileの名前
+	 </ul>
+
+      <p> 返り値は以下の名前がついたリスト。明示的になにかのオブジェクトに代入された場合だけ返す。
+      <ul>
+         <li> aveF ---- season x fleetの行列。平均されたF
+	 <li> res ---- repfileで、EXPLOITATION RATES以下の、年・季節・Fの行列全部
+	 <li> Farray ---- 平均すべき年 x season x fleetの3次元のFの行列
+	 </ul>
+	    </p>
+    <li><font color="red"> do.bootstrap </font>に、additive.num=0のオプションを追加。作成されるrepファイルは、paste("ss2-",additive.num+i,".rep",sep="")の名前になる。bootstrapを回数を分けて複数回行いたい場合に使う。<br><br>
+	       </ul>
+
+
+
+<li><b>2007/11/5</b> <br>
+     <ul>
+      <li> ブートストラップ用の新たな関数 <font color="red">do.bootstrap</font> を追加。(v2.00以前のSS2には対応しておりません。要望によっては対応を考えます）
+
+      <p>
+      do.bootstrapの引数のリストと使い方。
+            <ul>
+	    <li>namesfile="starter.ss2" : スターターファイルの名前
+	    <li>ss2.arg=NULL : ss2.exeに引き渡す引数。文字列として与えてください。
+	    <li>grad.criteria=0.1 : 各ブートストラップのrunでの、max gradの値。
+	    <li>max.calc=5 : 各ブートストラップのrunで計算する、最大の繰り返しの計算回数。 max.calcまたはgrad.criteriaのどちらかが満たされると、一回のブートストラップのrunが終了します。
+	    <li>is.plot=T : ブートストラップした後に、結果のグラフを作成するかどうか
+	    <li>debug.mode=F : デバック用のモード。実際にss2.exeを実行しない
+            </ul>
+	  
+    <p> do.bootstrapが実際にやる動作は、以下の通り。
+     <pre><code>
+-------- do.bootstrapを実行する前に ---------------------
+(0) starter.ss2の6行目（ブートストラップの回数を指定する部分）に
+    ブートストラップを行いたい回数を入れる
+-------- do.bootstrap() 内で ----------------------------
+(1) starter.ss2を読む
+(2) もし、６行目が１以上の値だったら、ss2を１回実行して、
+    ブートストラップ用のデータファイル SS2-nudata.dat を作成
+(3) (以下、ブートストラップ回分だけ繰り返す)
+    SS2-nudata.datから一個分のdatファイルを切りだし、そのdatファイルをもとに
+    推定し、結果をss2boot-i.repにコピー 
+  --> ブートストラップ回分のrepファイルが作成される
+--------------------------------------------------------
+     </code></pre>
+結果として、ブートストラップ回分のrepファイルが作成されることになりますが、
+これを今後どのようにまとめていくか（主要な数値、親魚資源量や加入量などだけを
+どこにどのぐらい抽出すべきか）については検討中。
+    </ul>
+
+<li>
+<li>
+<li>
+<li>
+</ul>
+
+<a href="tuna.html"> TOPに戻る </a>

@@ -1,0 +1,352 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<link href="../style.css" rel="stylesheet" type="text/css">
+<title> RVPA配布ページ</title>
+</head>
+
+<body>
+<h3><u> RVPA </u></h3>
+VPAを用いた日本国内資源の資源評価を行うためのRのパッケージを配布しています。
+パッケージはR3.0.1のもとで作成しましたので、インストールに問題が生じたときは、R3.0.1に近いバージョンのRでお試しください。
+
+<p>
+<b>最新ファイル</B> <br>
+ダウンロードしたファイルを source コマンドで読み込んでご使用ください。各引数の詳しい説明等もこのテキストファイルの中身を適宜ご参照ください。
+
+<!-- <li> RVPAソースコード <a href="RVPA_1.8.tar.gz"> RVPA_1.8.tar.gz </a> <br>
+
+<li> Windows用バイナリ<a href="RVPA_1.8.zip"> RVPA_1.8.zip </a> <br> --> 
+<ul>
+<li> VPA計算用テキストコード <a href="rvpa1.9.2.r"> rvpa1.9.2.r </a> <br>
+<li> 将来予測・管理基準値計算用テキストコード <a href="https://github.com/ichimomo/future-rvpa"> GITHUBサイトに移動しました </a> <br>
+</ul>
+</p>
+
+<p>
+<b> 更新情報 </B>
+<ul>
+<li> 2018/10/24: future.vpaの開発環境をGithubに移動しました．<a href="https://github.com/ichimomo/future-rvpa"> GITHUBサイトに移動しました </a> チュートリアルなど，今後はこちらのサイトで更新されます．
+<li> 2018/06/05
+<ul>
+	<li> 管理基準値計算～将来予測，MSY推定に関する<a href="future-doc.html">チュートリアル</a>
+	<li> チュートリアルで使うデータファイル <a href="data.zip"> data.zip </a>
+	</ul>
+
+
+<li> 2018/05/22 1.92アップ
+  <ul>
+    <li> vpa関数にsigma.constraintのオプション（対馬のマアジで使われている）を追加。例えばindexが５本ある場合、sigma.constraint=c(1,2,2,3,3)とすると2,3本めと4,5本目のindexに対する分散は等しいとして推定する。
+  </ul>
+  
+<li> 2017/08/03 1.8修正
+  <ul>
+    <li> 5月にアップした将来予測関数にバグがあり，修正しました
+    <li> <a href="re-evaluation.html"> 再評価の例 </a>を載せました
+  </ul>
+  
+<li> 2017/05/30 1.8にアップデート 
+  <ul>
+    <li> vpa関数にRidge回帰のオプションを追加。
+    <li> SR.est関数の追加（再生産関係を推定して、MSY管理基準値を推定する関数、暫定版）
+    <li> これら新しい機能の <a href="ridge.example.html"> 使用例 </a>
+  </ul>
+
+<li> 2016/02/02 <a href="rvpa1.7.r"> 1.7(暫定版、テキストコードのみ) </a> にアップデート 
+  <ul>
+    <li> get.ABCにKobe matrixを出力する機能を追加。詳しくは下のRコード例を参照。
+  </ul>
+<li> 2015/07/11 1.6にアップデート
+    <ul> 
+      <li> バージョン番号がいきなり飛んでいますが、大きな変更があったというわけではないです。変更内容については、テキストファイルrvpa1.6.rの「変更履歴」を参照ください。
+    </ul>
+
+<li> 2014/07/02. 1.3にアップデート
+    <ul> 
+      <li> vpa関数資源量指数のシグマを推定し、それで重み付けする機能を追加（sigma.constraint）。例えばindexが５本ある場合、sigma.constraint=c(1,2,2,3,3)とすると2,3本めと4,5本目のindexに対する分散は等しいとして推定する。
+    </ul>
+<li> 2014/07/04. 1.2にアップデート
+    <ul> 
+      <li> ref.F関数にPope(=デフォルトはFALSE)を追加。TRUEにした場合、Popeの式を使ってyieldを計算する（YPRの値が違ってくる）
+      <li> 最近年のFのプラスグループがNAになっている対馬マイワシで、ref.Fを使うときに生じていた不具合を修正
+    </ul>
+<li> 2014/05/12. 1.0から1.1にアップデートしました
+</ul>
+
+
+
+
+<p>
+過去のバージョン
+<ul>
+<li> 旧バージョン(1.8)　<a href="RVPA_1.8.zip"> RVPA_1.8.zip </a> <br>
+<li> 旧バージョン(1.6)　<a href="RVPA_1.6.zip"> RVPA_1.6.zip </a> <br>
+<li> 旧バージョン(1.3)　<a href="RVPA_1.3.zip"> RVPA_1.3.zip </a> <br>
+<li> 旧バージョン(1.2)　<a href="RVPA_1.2.zip"> RVPA_1.2.zip </a> <br>
+<li> 旧バージョン(1.1)　<a href="RVPA_1.1.zip"> RVPA_1.1.zip </a> <br>
+<li> 旧バージョン(1.0)　<a href="RVPA_1.0.zip"> RVPA_1.0.zip </a> <br>　<br>
+</ul>
+</p>
+
+<p>
+<ul>
+<li> 例コードを計算するのに必要なデータ(<a href="caa.csv">caa.csv</a>,<a href="maa.csv">maa.csv</a>,<a href="waa.csv">waa.csv</a>,<a href="M.csv">M.csv</a>,<a href="index.csv">index.csv</a>)
+</ul>
+</p>
+
+<p>
+<b>マニュアル</b>
+<ul>
+<li> VPAについて<a href="rvpa.pptx"> パワーポイントファイル </a> <br>
+<li> 管理基準値、将来予測、ABC計算について<a href="rfuture.pptx"> パワーポイントファイル </a> <br>
+</ul>
+</p>
+
+<p>
+<b>インストール方法(Windowsの場合)</b>
+<ul>
+<li>zipファイルをダウンロードしたあと、Rのメニューの「パッケージ」から「ローカルにあるzipファイルからのインストール」を選択
+<li> ファイル選択画面が表示されるので，ダウンロードしたzipファイルを選択して「OK」ボタンを押す
+<li> パッケージがインストールできたら，library(RVPA)によって，RVPAパッケージを呼び出す
+<li> help(関数名)とすると，主要な関数については，各関数で使えるオプションや例コードなどが確認できる
+</ul>
+</p>
+
+<p>
+<b>インストール方法(Linuxの場合)</b>
+<ul>
+<li>tar.gzのほうダウンロードする
+<li>コマンドプロンプトにて、R CMD INSTALL RVPA_1.0.tar.gz とする
+</ul>
+</p>
+
+<p>
+<b>例コード</b>
+<pre>
+<u>例コード1: VPA計算</u>
+<code>
+# ライブラリの呼び出し
+library(RVPA) 
+## データの読み込み
+caa <- read.csv("caa.csv",row.names=1)
+waa <- read.csv("waa.csv",row.names=1)
+maa <- read.csv("maa.csv",row.names=1)
+M <- read.csv("M.csv",row.names=1)
+cpue <- read.csv("index.csv",row.names=1)
+
+## データの整形
+dat <- data.handler(caa, waa, maa, cpue, M)
+
+## チューニングなしVPA
+  # p.initは初期値。収束しない場合（Fがゼロになる場合など）は、初期値を変えてみる
+  # fc.yearは、Fcurrentを計算する範囲。管理基準値と将来予測で使われる。
+vout1 <- vpa(dat,tf.year=1997:1999,Pope=TRUE,fc.year=1998:2000,alpha=1,p.init=0.5) 
+vout1a <- vpa(dat,tf.year=1997:1999,Pope=FALSE,fc.year=1998:2000,alpha=1,p.init=0.5)
+vout1b <- vpa(dat,tf.year=1997:1999,Pope=TRUE,fc.year=1998:2000,alpha=0.5,p.init=0.5)
+vout1c <- vpa(dat,tf.year=1999:1999,Pope=TRUE,fc.year=1998:2000,alpha=1,p.init=0.5) 
+
+## vout2; チューニング，選択率updateなし
+vout2 <- vpa(dat,tune=TRUE,sel.update=FALSE,Pope=FALSE,
+             tf.year=NULL,sel.f=vout1$saa$"2000", # 選択率の仮定
+             abund=c("N"),min.age=c(0),max.age=c(6), # 資源量指数の設定
+             alpha=1,p.init=0.5,max.dd = 0.00001,fc.year=1998:2000)
+
+## vout3; チューニング，選択率update
+  # tf.yearは選択率の初期値として用いられる。
+vout3 <- vpa(dat,tune=TRUE,sel.update=TRUE,Pope=FALSE,
+             tf.year=1997:1999,sel.f=NULL, 
+             abund=c("N"),min.age=c(0),max.age=c(7), # 資源量指数の設定
+             alpha=1,p.init=0.5,max.dd = 0.00001,fc.year=1998:2000)
+
+## チューニング，選択率全推定
+  # tf.yearも sel.fも必要ない
+vout4 <- vpa(dat,tune=TRUE,sel.update=FALSE,term.F="all",
+             tf.year=NULL,sel.f=NULL,
+             abund=c("N"),min.age=c(0),max.age=c(6), # 資源量指数の設定
+             alpha=1,p.init=0.5,max.dd = 0.00001,fc.year=1998:2000)
+</code>
+</pre>
+
+<pre>
+<u>例コード2: モデル診断・推定パラメータの不確実性の評価</u>
+<code>
+## 尤度プロファイルを用いた80%信頼区間推定
+ci0 <- profile.likelihood.vpa(vout3, method="ci",Alpha=0.80)$ci
+
+## ノンパラメトリックブートストラップ(method="n")
+set.seed(1)
+boot.sim1 <- boo.vpa(vout3,B=1000,method="n")
+  # boo.vpaはブートストラップ回数分のvpa関数の返り値のリストを返す
+  # 値の取り出しは、リストの操作関数sapplyまたはlapplyを用いる
+tf.dist1 <- sapply(boot.sim1,function(x) x$faa["2000"][7,])
+ci1 <- quantile(tf.dist1,probs=c(0.1,0.9))
+
+## パラメトリックブートストラップ(method="p")
+set.seed(1)
+boot.sim2 <- boo.vpa(vout3,B=1000,method="p")
+tf.dist2 <- sapply(boot.sim2,function(x) x$faa["2000"][6,])
+ci2 <- quantile(tf.dist2,probs=c(0.1,0.9))
+
+## 平滑化ブートストラップ(method="r")
+set.seed(1) 
+boot.sim3 <- boo.vpa(vout3,B=1000,method="r")
+tf.dist3 <- sapply(boot.sim3,function(x) x$faa["2000"][6,])
+ci3 <- quantile(tf.dist3,probs=c(0.1,0.9))
+
+## 4つの信頼区間の比較
+rbind(ci0,ci1,ci2,ci3)
+
+## ノンパラメトリックブートストラップ for vout4
+set.seed(1)
+boot.sim4 <- boo.vpa(vout4,B=1000,method="n")
+
+tf.dist4 <- sapply(boot.sim4[boot.sim4!="try-error"],function(x) x$faa["2000"][7,])
+ci4 <- quantile(tf.dist4,probs=c(0.1,0.9))
+
+## Spawning biomassの信頼区間のプロット
+Years <- colnames(dat$caa)
+ssb.boot <- sapply(boot.sim1,function(x) colSums(x$ssb))
+x <- t(apply(ssb.boot,1,quantile,probs=c(0.1,0.5,0.9)))
+matplot(Years,x,ylim=c(0,max(x)),col=1,type=c("l","b","l"),
+        pch=1,lty=c(2,1,2),ylab="Spawning biomass")
+
+## 残差の自己相関のチェック
+resid <- as.numeric(log(vout3$pred.index) - log(dat$index))
+plot(resid,type="b")
+acf(resid) # 自己相関は特にない
+# 正規性の検定
+ks.test(resid,"pnorm",mean=mean(resid),sd=sd(resid))
+# 分布が有意に正規分布から外れているわけではない
+ks.test(c(resid,10),"pnorm",mean=mean(c(resid,10)),sd=sd(c(resid,10)))
+# 大きな外れ値があると、p値が小さくなって、正規分布でない、となる。
+</code>
+</pre>
+
+<pre>
+<u>例コード3: 管理基準値・将来予測、ABC計算</u>
+<code>
+## 年齢別体重など、将来で仮定する生物パラメータ
+## を平均する期間が共通の場合、あらかじめbyearに入れておく
+## 同様に、将来で仮定するRPSをとる期間もrps.yearとしておく
+byear <- 1998:2000
+rps.year <- 1991:2000
+
+## 管理基準値の計算
+rout <- ref.F(vout3,
+                waa.year=byear,maa.year=byear,
+                M.year=byear,rps.year=rps.year,
+                max.age=Inf,pSPR=c(20,25,30,40),
+                Fspr.init=0.2)
+rout$summary #　結果の概観
+
+## 将来予測(vout1); 例えば親魚資源を２００７年に４００までに回復させる
+fout1 <- future.vpa(vout3,currentF=NULL, multi=1, 
+                    nyear=15,start.year=2001,N=1000,ABC.year=2002, 
+                    waa.year=byear,maa.year=byear,M.year=byear,
+                    rec.new=NULL,
+                    recfunc=RPS.simple.rec,
+                    rec.arg=list(rps.year=rps.year,
+                      upper.ssb=Inf,bias.corrected=TRUE,rpsmean=FALSE,
+                      upper.recruit=Inf),
+    # ↓回復シナリオ(Frec)の場合、Frecにリストを与えて、回復シナリオを設定する
+    #   stochasitc=FALSEで、決定論的な親魚資源量がBlimitと一致するようにする
+    #   stochasitc=TRUEでは、確率論的に将来予測をしたとき、50%の確率で
+    #                      親魚資源がBlimitを上回るようにする
+                    Frec=list(stochastic=FALSE,future.year=2007,
+                      Blimit=90,seed=1,method="nibun"))
+fout1$ABC[1] #1000回シミュレーションで1001個の結果が返される。1個目の要素は、決定論的
+             #将来予測の結果。2-1001個目の要素が、確率論的な将来予測の結果
+hist(fout1$ABC[-1]) # 加入の不確実性を考慮した場合のABCの分布
+fout1$multi # 最終的に使われたFcurrentに対する乗数
+
+## 将来予測(vout3)；Fmedで漁獲
+par(mfrow=c(2,2))
+fout2 <- future.vpa(vout3,
+                    # ↓NULLの場合、vout1$Fc.at.aが用いられる
+                    currentF=NULL, 
+                    # ↓管理がスタートする年からcurrentFに乗じられる係数
+                    #   ここでは,Fmedを使っている
+                    multi=rout$summary$Fmed[3], 
+                    nyear=15,start.year=2001,N=1000,
+                    #　↓ABCを計算する年
+                    ABC.year=2002, 
+                    waa.year=byear,maa.year=byear,M.year=byear,
+                    rec.new=NULL,
+                    #　↓将来の加入関数とその引数
+                    recfunc=RPS.simple.rec,
+                    rec.arg=list(rps.year=rps.year,
+                      upper.ssb=Inf,bias.corrected=TRUE,rpsmean=FALSE,
+                      upper.recruit=Inf))
+fout2$ABC[1] 
+hist(fout2$ABC[-1]) 
+
+## ABC計算
+SSBcur.sim <- rev(colSums(vout3$ssb))[1]
+ABC.sim <- getABC(res.vpa=vout3, # vpaの結果
+                  res.ref=rout, # ref.Fの結果
+                  res.future=fout2, # future.vpaの結果 
+                  target.year=2005, # 確率を計算する基準の年
+                  Blim=200,N=1000,SSBcur=SSBcur.sim,
+                  # ↓ABCの基礎となる管理基準値（names(rout2$summary)から選ぶ）
+                  ref.case=c("Fcurrent","Fcurrent","FpSPR.20.SPR","FpSPR.30.SPR"),
+                  multi=c(1,fout2$multi,1,1)) # 上の管理基準値に対する乗数
+ABC.sim$ABC # 要約表
+ABC.sim$kobe # Kobe matrix
+	   
+## 結果をcsvファイル、グラフとして出力する
+out.vpa(res=vout1a, # VPAの結果 
+        rres=rout,  # 管理基準値の計算結果
+        fres=fout1, # 将来予測結果
+        ABC=ABC.sim) # ABC計算結果
+# デフォルトではvpa.pdfとvpa.csvというファイルが作成され、
+# そこに推定された資源量などの情報が載っています
+# res, rres, fres, ABCがすべて揃っていなくてもOK
+#   ない場合はNULLを入れる
+# 例：VPAの結果だけ出力する場合
+out.vpa(res=vout1a)
+
+# Kobe-matrixだけを出力する場合
+ABC.sim2 <- getABC(res.vpa=vout3, # vpaの結果
+                  res.ref=rout, # ref.Fの結果
+                  res.future=fout2, # future.vpaの結果 
+                  target.year=2005, # 確率を計算する基準の年
+                  Blim=200,N=1000,SSBcur=SSBcur.sim,
+                  # ↓ABCの基礎となる管理基準値（names(rout2$summary)から選ぶ）
+                  ref.case=rep("Fcurrent",6),
+                   multi=seq(from=0.7,to=1.2,by=0.1)) # 上の管理基準値に対する乗数
+# Kobe-matrix
+ABC.sim2$kobe.matrix
+# csvへの出力
+out.vpa(ABC=ABC.sim2)
+	   
+## bootstrap結果を使って将来予測
+fssb <- fbiom <- ABC <- NULL
+tmp <- fout2$input
+tmp$N <- 20 # stochastic runは20回づつ繰り返す
+for(i in 1:length(boot.sim1)){
+  tmp$res0 <- boot.sim1[[i]]
+  tmp$res0$input <- vout3$input
+  # ↓ブートストラップで推定に失敗している場合、エラーが出て止まるのでtryで囲む
+  ftmp <- try(do.call(future.vpa,tmp))
+  if(class(ftmp)!="try-error"){
+    fssb <- cbind(fssb,ftmp$vssb[,-1])
+    fbiom <- cbind(fbiom,ftmp$vbiom[,-1])
+    ABC <- cbind(ABC,ftmp$ABC)
+  }
+}
+par(mfrow=c(2,1))
+boxplot(t(fssb),ylim=c(0,500))
+boxplot(t(fbiom))
+</code>
+</pre>
+
+
+<hr>
+<center>
+<a href="../index.html"> Back to the top page </a>
+</center>
+
+</body>

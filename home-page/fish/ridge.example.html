@@ -1,0 +1,70 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<link href="../style.css" rel="stylesheet" type="text/css">
+<title> Ridge回帰使用例</title>
+</head>
+
+<pre>
+<code>
+## データの読み込み
+caa <- read.csv("caa.csv",row.names=1)
+waa <- read.csv("waa.csv",row.names=1)
+maa <- read.csv("maa.csv",row.names=1)
+M <- read.csv("M.csv",row.names=1)
+cpue <- read.csv("index.csv",row.names=1)
+
+## データの整形
+dat <- data.handler(caa, waa, maa, cpue, M)
+
+## チューニング，選択率全推定
+# tf.yearも sel.fも必要ない
+vout4 <- vpa(dat,tune=TRUE,sel.update=FALSE,term.F="all",
+             tf.year=NULL,sel.f=NULL,
+             abund=c("N"),min.age=c(0),max.age=c(6), # 資源量指数の設定
+             alpha=1,p.init=0.5,max.dd = 0.00001,fc.year=1998:2000)
+
+########### ここまで例コード1と同じ
+
+########### レトロスペクティブ解析
+retro.vout4 <- retro.est(vout4, #フルモデル（データを除かない場合）の結果
+                         n=5, #何年分さかのぼるか（初期設定は5）
+                         b.fix=TRUE #フルモデルでb推定する場合にその値を固定するかどうか(この例では関係ない)
+)
+retro.vout4$mohn #Mohn's rho (Mohn, R. 1999. ICES Journal of Marine Science) の結果
+
+########### リッジVPA (Okamura et al. 2017, ICES Journal of Marine Science)
+vout4$term.f  #全F推定する場合、terminal Fの推定が不安定になりやすい
+ridge.vout4 <- vout4
+ridge.vout4$input$lambda <- 0.1 #ペナルティの大きさ（初期設定は0で1未満）
+#lambdaの大きさはレトロスペクティブバイアスを最小化するように決める
+ridge.vout4 <- do.call(vpa, ridge.vout4$input)
+ridge.vout4$term.f #Fが安定化する
+
+retro.list <- list()
+for(i in 1:100){
+  res <- vout4
+  res$input$lambda <- (i-1)/100
+  res <- do.call(vpa, res$input)
+  retro.list[[i]] <- retro.est(res)
+}
+
+mohn.list <- sapply(1:100, function(i)(retro.list[[i]]$mohn))
+#リッジVPAではF以外のMohn's rhoが増加してしまう
+
+############# 再生産関係を推定して、MSYを計算する関数(SR.est)
+# 時間かかります
+mout <- SR.est(vout4,
+	      what.est=c(TRUE,TRUE,TRUE), # HS,BH,RIのどれをあてはめるか。
+              bref.year=1999:2000, # 生物パラメータを用いる期間
+              # years=c(1970:2013), # 観測されたSR関係を用いる期間
+              er.log=TRUE, # 誤差。TRUEで対数正規誤差
+              fc.year=1999:2000, # MSY計算のさいに選択率を平均する期間
+              seed=1) # 乱数の種。この値を変えると乱数が変わるので結果も変わる
+allplot(mout,N.unit=1000000) # 要約表・グラフの確認 (N.unitはwaaの単位?)
+</code>
+</pre>
+

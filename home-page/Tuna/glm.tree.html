@@ -1,0 +1,130 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<link href="../style.css" rel="stylesheet" type="text/css">
+<title> Package of 'glm.tree'</title>
+</head>
+
+<body>
+<h3> Package of 'glm.tree'   </h3>
+
+<p>
+<mytitle>Change Log:</mytitle> <br>
+<ul><ul>
+<li> 1.2; 3rd August 2012. Define namespace
+<li> 31th March 2011. Debugged because older version can't conduct tree-glm only within a specific range of longitude 
+<li> 17th Dec 2010. Add binary zip package for Windows XP
+</ul></ul>
+
+</p>
+
+<p>
+<mytitle>Download and Install:</mytitle> <br>
+[source code] <a href="glm.tree_1.2.tar.gz"> glm.tree_1.2.tar.gz </a> <br>
+   <ul>
+     <li> Install the 'tar.gz' ball by R command such as 
+<pre>
+<code> 
+command line> R CMD INSTALL glm.tree_1.0.tar.gz
+</code></pre>
+   </ul>
+
+<br><br>
+[For windows] <a href="glm.tree_1.2.zip"> glm.tree_1.2.zip </a> (complied under windows XP (32bit))<br>
+    <ul>
+       <li> GO to menu -> package -> Install zip file in local directory ->  Select the zip file
+    </ul>
+</p>
+
+
+<p>
+<mytitle> Required additional package:</mytitle> biglm <br>
+</p>
+
+<p>
+<mytitle>Usage: </mytitle> See help after calling the library of 'glm.tree' such as  
+<pre>
+<code> 
+library(glm.tree)  
+help(glm.tree)
+</code> 
+</pre>
+</p>
+
+<p>
+<mytitle>Examples: </mytitle> (same as shown in help of glm.tree)  
+<pre>
+<code>
+library(glm.tree)
+data(ldata)
+# install.packates(biglm) # if 'biglm' packages are not installed.  
+library(biglm)
+ldata$lcpue <- log(ldata$N)
+ldata$area <- 0
+# Dependent variable should be in 'ldata$lcpue', independent
+# variable of longitude and latitude should be in 'ldata$lon' and
+# ldata$lat, respectively
+str(ldata)
+# remove zero catch data
+ldata <- subset(ldata,N>0)
+
+# create area stratification
+
+# conduct iteration until obtaining minimum AIC
+# ==> !! caution: this takes too much time and computer memory
+res0 <- make.treeglm(expression(lcpue~as.factor(year)+as.factor(area)),
+                          data=ldata,debug.mode=F,max.split=Inf,graph=F,IC="AIC")
+# conduct only 10th iterations
+res <- make.treeglm(expression(lcpue~as.factor(year)+as.factor(area)),
+                          data=ldata,debug.mode=F,max.split=10,graph=F,IC="AIC")
+plotworld(res$data,area=res$area[[9]])
+plot(res$summary.stat$Num.area,res$summary.stat$AIC)
+
+# compare results
+ldata$area2 <- res$area[[2]]
+ldata$area9 <- res$area[[9]]
+ldata$area14 <- res$area[[14]]
+res.glm2 <- glm(lcpue~as.factor(year)+as.factor(area2),data=ldata)
+res.glm9 <- glm(lcpue~as.factor(year)+as.factor(area9),data=ldata)
+res.glm14 <- glm(lcpue~as.factor(year)+as.factor(area14),data=ldata)
+
+par(mfrow=c(2,2))
+plot(exp(c(res.glm2$coef[1],res.glm2$coef[1]+res.glm2$coef[2:16])),
+    type="b",main="Iteration=3")
+plot(exp(c(res.glm9$coef[1],res.glm9$coef[1]+res.glm9$coef[2:16])),
+    type="b",main="Iteration=9")
+plot(exp(c(res.glm14$coef[1],res.glm14$coef[1]+res.glm14$coef[2:16])),
+    type="b",main="Iteration=14") # Closer to true abundance trends
+
+# Another option to use BIC as an information criteria
+res.bic <- make.treeglm(expression(lcpue~as.factor(year)+as.factor(area)),
+                          data=ldata,debug.mode=F,max.split=15,graph=F,IC="BIC")
+# Another option to create area stratification,
+#     for avoiding area strata with missing data
+res.md <- make.treeglm(expression(lcpue~as.factor(year)+as.factor(area)),
+                          data=ldata,debug.mode=F,max.split=15,graph=F,IC="MD",IC2="AIC")
+
+</code>
+</pre>
+</p>
+
+<p>
+<mytitle>Past packages: </mytitle> 
+<ul>
+<li> <a href="glm.tree_1.1.tar.gz">glm.tree_1.1.tar.gz</a>, 
+     <a href="glm.tree_1.1.zip">glm.tree_1.1.zip</a>
+<li> <a href="glm.tree_1.0.tar.gz">glm.tree_1.0.tar.gz</a>, 
+     <a href="glm.tree_1.0.zip">glm.tree_1.0.zip</a>
+</ul>
+</p>
+
+
+<hr>
+<center>
+<a href="../index.html"> Back to the top page </a>
+</center>
+
+</body>

@@ -1,0 +1,149 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<link href="../style.css" rel="stylesheet" type="text/css">
+<title> Package of 'sstools'</title>
+</head>
+
+<body>
+<h3> Package of 'sstools'   </h3>
+This packages is for producing diagnostics of results from <a href="http://nft.nefsc.noaa.gov/SS3.html"> Stock Synthesis (SS)</a>.   While there is another packages, named <a href="http://code.google.com/p/r4ss/"> r4ss</a>, which is officially supported by developers of SS, this package of 'sstools' is specialized for over-plotting multiple results at once (see snapshots).  
+
+<p>
+<mytitle>Change Log:</mytitle> <br>
+<ul>
+<li> 28 Nov 2013: 1.9 (add various minor improvement, and diagnostics to show effective sample size)
+<li> 25 Oct 2012: 1.7 (Fix a bug when comparing multi CompReport.sso)
+<li> 27 Sep 2012: 1.6 (Several changes)
+<li> 30 April 2012: 1.5 (Fix bugs)
+<li> 10 Jan 2012: 1.4 (For SS-3.23b)
+<li> 19 Dec 2011: 1.3 (plot multiple growth curves when assuming multiple growth morphs, fix malfunction when calculating FAA in the base of multiple growth morph, developed under SS-3.21d)
+<li> 8 Dec 2011: 1.2 (Fix the bug, when length-based maturity is used)
+<li> 6 Dec 2011: 1.1 (Namespace is defined)
+<li> 30 May 2011: 1.0.6 (Minor updates)  
+<li> 22 April 2011: 1.0.5 (change appearance and add length diagnostics)  
+<li> 12 April 2011: 1.0.4 (corresponding to <u>SS3.2</u>)  
+<li> 8 April 2011: 1.0.3  (minor update from 1.0.2)  
+        <ul>
+           <li> Some features are improved, but there are no large updates.  
+        </ul>
+<li> 27th March 2011: 1.0.2 (minor update from 1.0.1)  
+        <ul>
+           <li> Largely reduce calculation time when over-plotting length fits with multiple repfiles.   
+           <li> Make bubble plot bigger.   
+           <li> Add a figure on F at age by years.  
+
+        </ul>
+<li> 29th Dec 2010: Replace 1.0 with 1.0.1 (remove some bugs in 1.0)
+<li> 17th Dec 2010: Add binary zip package for Windows XP
+</ul>
+</p>
+
+<p>
+<mytitle>Download and Install:</mytitle>  <br><br>
+[source code] <a href="sstools_1.9.tar.gz"> sstools_1.9.tar.gz</a> 
+   <ul>
+     <li> Install the 'tar.gz' ball from command line such as '> R CMD INSTALL sstools_X.X.X.tar.gz'
+   </ul>
+
+[For windows] <a href="sstools_1.9.zip"> sstools_1.9.zip </a> (complied under windows XP (32bit))
+    <ul>
+       <li> GO to menu -> package -> Install zip file in local directory ->  Select the zip file
+    </ul>
+<!-- 
+<br><br>
+[No arch, but not able to use help etc.] <a href="sstools_1.0.4.R"> sstools_1.0.4.R </a> [corresponding to SS-V3.11b, at least]
+   <ul>
+     <li> Just read the simple text file if it is difficult to install the package from tar.gz package.  
+   <pre> <code> 
+          R> source("sstools_X.X.X.R")
+     </code></pre>
+   </ul>
+-->
+</p>
+
+<p>
+<mytitle>Usage: </mytitle> See help after calling the library of 'sstools' such as  
+<pre>
+<code> 
+library(sstools)  
+help(sstools)
+</code> 
+</pre>
+</p>
+
+<p>
+<mytitle>Examples: </mytitle>
+<pre>
+<code>
+library(sstools)
+# No options
+allplot()
+
+# overplots of multiple results
+allplot(repfile=c("Report1.SSO","Report2.SSO","Report3.SSO"),
+        compfiles=c("CompReport1.SSO","CompReport2.SSO","CompReport3.SSO"))
+
+</code>
+</pre>
+</p>
+
+<p>
+<mytitle>NOTEs when over-plotting multiple results: </mytitle>
+<ul>
+  <li> Only single bubble plot of length residuals is produced from the firstly specified repfile, even though multiple repfiles are specified. (複数のrepfileを指定しても、bubble plotの出力は、最初のrepfileのみ。)
+  <li> If overplotting results with different time period, please specify the repfile with longest time period for the first time.  If not, the allplot can't work.  (資源評価期間が異なる結果を重ね書きする場合は、一番長い時系列を一番最初に持ってくること。)
+  <li> It is difficult to overplot multiple repfiles with different 'defined fisheries', and 'future projection settings', where different number of selectivity curves are estimated in SS.  (異なる漁業定義、将来予測の設定等を含むrepfileを一緒に重ね書きするのは困難（selectivityのプロットで止まる）)
+</ul>
+</p>
+
+<!--
+<p>
+<mytitle>Other NOTEs: </mytitle>
+<ul>
+  <li> Option of is.plot.cohortSSB produces error and terminate the program.  So, if you assume multiple recruitment in SS, please off this option as is.plot.cohortSSB=FALSE (default is TRUE).  (is.plot.cohortSSBは複数加入に対応していないので、複数加入を仮定したSSファイルを使う場合はこのオプションをFALSEにしてください。)
+</ul>
+</p>
+-->
+
+<p>
+<mytitle>Past packages: </mytitle> 
+<ul>
+<li> <a href="sstools_1.7.tar.gz">sstools_1.6.tar.gz</a>, <a href="sstools_1.7.zip">sstools_1.7.zip</a>: developed under SS-3.23b
+<li> <a href="sstools_1.6.tar.gz">sstools_1.6.tar.gz</a>, <a href="sstools_1.6.zip">sstools_1.6.zip</a>: developed under SS-3.23b
+<li> <a href="sstools_1.5.tar.gz">sstools_1.5.tar.gz</a>, <a href="sstools_1.5.zip">sstools_1.5.zip</a>: developed under SS-3.23b
+<li> <a href="sstools_1.4.tar.gz">sstools_1.4.tar.gz</a>, <a href="sstools_1.4.zip">sstools_1.4.zip</a>: developed under SS-3.23b
+<li> <a href="sstools_1.3.tar.gz">sstools_1.3.tar.gz</a>, <a href="sstools_1.3.zip">sstools_1.3.zip</a>: developed under SS-3.21d
+<li> <a href="sstools_1.2.tar.gz">sstools_1.2.tar.gz</a>, <a href="sstools_1.2.zip">sstools_1.2.zip</a>: developed under SS-3.10b
+<li> <a href="sstools_1.1.tar.gz">sstools_1.1.tar.gz</a>, <a href="sstools_1.1.zip">sstools_1.1.zip</a>: developed under SS-3.10b
+<li> <a href="sstools_1.0.6.tar.gz">sstools_1.0.6.tar.gz</a>, <a href="sstools_1.0.6.zip">sstools_1.0.6.zip</a>: developed under SS-3.10b
+<li> <a href="sstools_1.0.5.tar.gz">sstools_1.0.5.tar.gz</a>, <a href="sstools_1.0.5.zip">sstools_1.0.5.zip</a>: developed under SS-3.10b
+<li> <a href="sstools_1.0.4.tar.gz">sstools_1.0.4.tar.gz</a>, <a href="sstools_1.0.4.zip">sstools_1.0.4.zip</a>: developed under SS-3.10b
+<li> <a href="sstools_1.0.3.tar.gz">sstools_1.0.3.tar.gz</a>, <a href="sstools_1.0.3.zip">sstools_1.0.3.zip</a>: developed under SS-3.10b
+<li> <a href="sstools_1.0.2.tar.gz">sstools_1.0.2.tar.gz</a>, <a href="sstools_1.0.2.zip">sstools_1.0.2.zip</a>: developed under SS-3.10b
+<li> <a href="sstools_1.0.1.tar.gz">sstools_1.0.1.tar.gz</a>, <a href="sstools_1.0.1.zip">sstools_1.0.1.zip</a>: developed under SS-3.10b
+</ul>
+</p>
+
+<p>
+<mytitle> Snapshots </mytitle> 
+<ul>
+<IMG src="snapshots/out1.jpg" width="30%",height="30%">
+<IMG src="snapshots/out2.jpg" width="30%",height="30%">
+<IMG src="snapshots/out5.jpg" width="30%",height="30%">
+<IMG src="snapshots/out4.jpg" width="30%",height="30%">
+<IMG src="snapshots/out3.jpg" width="30%",height="30%">
+<IMG src="snapshots/out6.jpg" width="30%",height="30%">
+</ul>
+<font size=2>** Original data of this snapshots are from 'simple' example in <a href="http://nft.nefsc.noaa.gov/SS3.html"> Stock Synthesis HP </a> at NOAA </font>
+</p>
+
+<hr>
+<center>
+<a href="../index.html"> Back to the top page </a>
+</center>
+
+</body>
