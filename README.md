@@ -9,16 +9,7 @@
 
 ### [fraysr_tool](https://github.com/ichimomo/frasyr_tool)
    - frasyrを動かすためのRスクリプトを集めたファイル集（パッケージではありません）。水研内部のみのプライベートレポジトリになります。利用したい場合はgithubのIDを取得し、IDを市野川までご連絡ください。
-   - 一般的な使い方はトップページの[README](https://github.com/ichimomo/frasyr_tool/blob/master/README.md)をご参照ください
-   - ブランチ構成
-      - master: 1週間一度くらいの頻度で大幅更新した安定版をアップしようと思っています。以前のダウンロード版が問題なくても、機能が追加されていることもあるので、定期的に最新のmaster版に更新してください
-	  - dev: issueで報告のあったバグなどを取り込んだ最新バージョン。
-   - ディレクトリ構成
-      - old_script: 過去配布していた(frasyr v1.20未満に対応)スクリプト
-      - script_SC2020: 2020年に開催される研究機関会議用のスクリプト。各スクリプトの説明は[こちら](https://github.com/ichimomo/frasyr_tool/tree/master/script_SC2020#%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E8%AA%AC%E6%98%8E)
-      - data_SC2020: 上記の会議で利用されるVPA結果などをおいています
-      - documents_SC2020: 上記の会議で紹介されたドキュメントを再現するRスクリプト
-      - SRcheck: 再生産関係のモデル診断をするためのスクリプト集。解説は[こちら](https://github.com/ichimomo/frasyr_tool/blob/master/SRcheck/SRdiagnostics.md)
+   - 使い方はトップページの[README](https://github.com/ichimomo/frasyr_tool/blob/master/README.md)をご参照ください
 
 ### 各種情報
 
