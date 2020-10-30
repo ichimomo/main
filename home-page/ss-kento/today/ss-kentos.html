@@ -1,0 +1,109 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<link href="style.css" rel="stylesheet" type="text/css">
+<title>統合型資源評価モデルstock synthesisの我が国資源評価への適用可能性に関する検討会（SS検討会）：資料置き場</title>
+</head>
+
+<body>
+<h3> 統合型資源評価モデルstock synthesisの我が国資源評価への適用可能性に関する検討会（SS検討会）：資料置き場 </h3>
+
+<hr>
+<p>
+<mytitle>統合型資源評価モデル stock synthesis について</mytitle> <br><br>
+統合型資源評価モデルは、米国や国際資源評価で主流になりつつある資源評価モデルですが、国内資源への応用例はほとんどなく、また、使ったことのある人も限られているのが現状です。本検討会では、統合モデルの一つで汎用的なソフトウェアであるStock Synthesisを使って資源評価を実施してみることで、統合モデルの性質を理解し、沿岸資源に適用することによる利点・問題点を議論することを目的としています。
+</p>
+
+<hr>
+<p>
+<mytitle>事前準備（インストールしておくプログラム）</mytitle> <br>
+<ul>
+  <li>  <a href="http://www.r-project.org/">R </a>
+  <li> テキストエディタ (なんでもいいですが，できれば<a href="http://www.forest.impress.co.jp/library/software/mery/">Mery </a> か，<a href="https://jp.emeditor.com/text-editor-features/history/emeditor-free/">Emeditor  </a>）を推奨（編集中に外部プログラムがファイルの書き換えをすることを許すテキストエディタ）
+  <li> PDF閲覧ソフト（例えば， <a href="http://get.adobe.com/jp/reader/"> Acrobat reader</a>など）
+</ul>
+
+
+<p>
+<mytitle>情報,関連ソフトウェアへのリンク</mytitle> <br>
+<ul>
+<li>プログラム・マニュアル配布ページ（英語）：<a href="http://nft.nefsc.noaa.gov/Stock_Synthesis_3.htm"> NOAA tool box </a>　<br> <br>
+<li> 日本語解説: 「Stock Synthesis II,古くて新しい資源評価モデル」竹内幸夫 <a href="http://fsf.fra.affrc.go.jp/enyo_rt/rt2.pdf">遠洋リサーチ＆トピックス 2: 7-11 </a><br> <br>
+<li> 英語解説: "Stock synthesis: a biological and statistical framework for fish stock assessment and fishery management" Methot and Wetzel. 2013.  <a href="http://www.sciencedirect.com/science/article/pii/S0165783612003293">  Fisheries Research, 142: 86-99 </a>　<br> <br>
+<li> 結果の可視化のためのパッケージ sstools <a href="../Tuna/sstools.html"> sstools </a>
+</ul>
+</p>
+
+<hr>
+<p>
+<mytitle>実習用データ・ファイル</mytitle> <br>
+<ul>
+  <li> 実行ファイル（version 3.24f. NOAAのサイトからDLしたものです。二次配布はご遠慮ください）
+   <ul>
+     <li> <a href="today/SSv3.24f-Win64/SS3.exe">  Windows(64bit)  </a>
+     <li> <a href="today/SSv3.24f-Win32/SS3.exe">  Windows(32bit)  </a>
+     <li> <a href="today/SSv3.24f-Mac/SS3">  Mac  </a>
+    </ul>
+  <li> <a href="today/SS_User_Manual_3.24f.pdf"> SSマニュアル（英語）</a> （NOAAのサイトからDLしたものです。こちらも二次配布はご遠慮ください）  <br><br>
+  <li> モデル1ファイル（演習1-2） <a href="today/model1.zip"> model1.zip (for Windows) </a>,<a href="today/model1_mac.zip"> model1_mac.zip (for Mac) </a><br><br>
+  <li> モデル2ファイル (課題）<a href="today/model2.zip"> model2.zip (for Windows) </a>  , <a href="today/model2_mac.zip"> model2_mac.zip (for Mac) </a> <br><br>
+</ul>
+<hr>
+<p>
+<mytitle>概要</mytitle> <br>
+
+<p>
+12日（金）
+<ul>
+<li> 10:00-10:30  <a href=today/1gaiyou.pdf>背景・趣旨説明</a>（市野川）　<br><br>
+
+<li> 10:30-12:00, 13:00-14:00 <a href=today/SS3.pdf> 統合モデル Stock Synthesis の概要 </a> （北門） 
+    <ul> <li> SSで仮定しているモデルの構造，データ，そして利用されている統計推測のフレームワーク
+     </ul>
+<li> 14:00-15:00  <a href="today/2practice1.pdf"> 実習1: とりあえず動かしてみよう</a> （市野川）　
+  <ul> 
+       <li> 必要なファイルとデータ（モデル1）の準備、コマンドラインによる実行
+       <li> Rによる結果の表示
+ </ul>
+
+<li> 15:15-16:45 <a href="today/3practice2.pdf">実習2：中身を理解しよう</a>（市野川）
+  <ul> 
+       <li> データの特徴（datファイル）
+       <li> モデル構造（ctlファイル）
+       <li> 結果の概観
+       </ul>
+
+<li> 16:45 <a href="today/4kadai.pdf">課題 </a>
+  <ul> 
+       <li> <a href="today/question.pptx"> アンケート用紙</a>
+  </ul>
+ </p>
+ 
+ <p>
+13日（土)
+<li>  9:30-11:00 モデルの収束，診断，チェックについて（竹内） <br> <br>
+
+<li> 11:10-12:00 <a href="today/5diagnostics.pdf"> 実習3: 答え合わせ&モデル診断</a>（市野川）
+  <ul> <li> モデル診断実習
+       <li> 昨日の答え合わせ・モデルの改良によって何がどのように変わったか？
+       <li> モデル診断：実践
+       <li> 尤度プロファイル
+  </ul>
+<li> 13:00-15:00 実習３（続き）・<a href="today/6discussion.pdf"> 総合討論（市野川）</a>
+   <ul> 
+       <li> 実習3の続き
+       <li> 総合討論（沿岸資源のＳＳあてはめの可能性）
+       <li> その他・質疑応答？
+　　</ul>
+</li>
+
+
+<hr>
+<center>
+<a href="../index.html"> Back to the top page </a>
+</center>
+
+</body>
