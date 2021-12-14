@@ -41,7 +41,7 @@
    - 2・3系資源をHCRでABC計算するときの関数を提供します
 
 ### その他
-   - [tidyverse連載](https://github.com/ichimomo/main/blob/master/tidyverse/phase1.md)　Rを使うときに欠かせないtidyverseをちょっとづつ解説しています
+   - [tidyverse連載](https://github.com/ichimomo/main/blob/master/tidyverse)　Rを使うときに欠かせないtidyverseをちょっとづつ解説しています
    - 再生産関係の選択の基準に関する[事例集](http://abchan.fra.go.jp/nc/htdocs/?action=cabinet_action_main_download&block_id=1543&room_id=765&cabinet_id=78&file_id=6204&upload_id=9747)（内部のみ）
 
 #### frasyrとfrasyr_toolの関係
