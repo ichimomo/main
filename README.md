@@ -30,6 +30,7 @@
       - [fraysr_toolの途中で出力される再生産関係の比較の表の見方](https://github.com/ichimomo/frasyr_tool/wiki/%E5%86%8D%E7%94%9F%E7%94%A3%E9%96%A2%E4%BF%82%E3%81%AE%E8%A1%A8%E3%81%AE%E8%A6%8B%E6%96%B9)
 
   - [tidyverse 勉強会](https://github.com/ichimomo/main/tree/master/tidyverse)：tidyなデータを取り扱うことを目的とした近代的なRコード群を提供するtidyverseの解説です
+  - [Rで使えるデバッグ技まとめ](https://github.com/ichimomo/main/blob/master/R/debugging_method/README.md)
 
 ## その他のレポジトリ
 
