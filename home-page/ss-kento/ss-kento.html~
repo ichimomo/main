@@ -1,0 +1,35 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<link href="../style.css" rel="stylesheet" type="text/css">
+<title>統合型資源評価モデルstock synthesisの我が国資源評価への適用可能性に関する検討会（SS検討会）：資料置き場</title>
+</head>
+
+<body>
+<h3> 統合型資源評価モデルstock synthesisの我が国資源評価への適用可能性に関する検討会（SS検討会）：資料置き場 </h3>
+SS検討会で使うデータ、資料置き場になります。
+
+<p>
+<mytitle>統合型資源評価モデル stock synthesis について</mytitle> <br>
+統合型資源評価モデルは、米国や国際資源評価で主流になりつつある資源評価モデルですが、国内資源への応用例はほとんどなく、また、使ったことのある人も限られているのが現状です。本検討会では、統合モデルの一つで汎用的なソフトウェアであるStock Synthesisを使って資源評価を実施してみることで、統合モデルの性質を理解し、沿岸資源に適用することによる利点・問題点を議論することを目的としています。
+</p>
+
+<p>
+<mytitle>SSについての情報</mytitle> <br>
+<ul>
+<li>プログラム・マニュアル配布ページ（英語）：http://nft.nefsc.noaa.gov/Stock_Synthesis_3.htm
+<li>日本語解説(「Stock Synthesis II,古くて新しい資源評価モデル（遠洋リサーチ＆トピックス、竹内幸夫）」
+　　　http://fsf.fra.affrc.go.jp/enyo_rt/rt2.pdf
+<li>英語解説（Fisheries Research, 142: 86-99)　http://www.sciencedirect.com/science/article/pii/S0165783612003293
+</ul>
+</p>
+
+<hr>
+<center>
+<a href="../index.html"> Back to the top page </a>
+</center>
+
+</body>

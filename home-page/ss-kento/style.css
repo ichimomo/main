@@ -1,0 +1,19 @@
+
+/* body {background-color: #F7EBEF; margin: 30px; font-family: "MS ゴシック",sans-serif;
+     line-height: 120%; } */
+ body {background-color: #FFFFF0; margin: 30px; font-family: "MS ゴシック",sans-serif;
+     line-height: 120%; } 
+pre {background-color: #FFFFFF; padding: 5px 20px 5px; }
+mytitle {color: #006666; font-weight: bold;}
+
+ul {margin: 10px 30px 10px;padding: 0}
+/*ul.upper li{margin: 10px 30px 10px;padding: 0; list-style-image: url(dots6/ico_dots6_1.gif);}
+ul ul li{margin: 10px 30px 10px;padding: 0; list-style-type: circle;} */
+
+ul li{ 
+  list-style-image: url(dots6/ico_dots6_22.gif);  
+} 
+    
+ul ul li{ 
+  list-style:circle;     
+} 

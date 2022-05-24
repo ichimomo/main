@@ -1,0 +1,88 @@
+<body bgcolor="ivory" link="midnightblue" vlink="royalblue">
+<font color="black">
+<html> <head>
+<title>マグロ資源評価関係、ファイル置き場</title>
+</head>
+
+<body>
+<h3>マグロ資源評価関係、ファイル置き場</h3>
+<hr>
+<h3>R勉強会資料</h3>
+<ul>
+   <li><a href="R_fish.zip">Rを使った水産データ解析の資料（パワーポイントファイル、サンプルデータファイル、Rのコードのzipファイル)</a>
+</ul>
+
+<h3>SS2勉強会資料</h3>
+<ul>
+   <li> <a href="ss2_lec5.zip">第5回資料</a>
+   <li> <a href="manuals/ss2_study_5.ppt">第5回パワーポイントファイル</a>
+</ul>
+
+<h3>その他</h3>
+<ul>
+   <li> <a href="RJB_Gearth/RJB_data.html">Google earthを使った漁獲量のプロット</a>
+</ul>
+
+<hr>
+<h3>SS2マニュアル</h3>
+<ul>
+   <li> <a href="manuals/SS2_User_Manual_V1.23.pdf">SS2ユーザーマニュアル (pdf)</a>
+              SS2の公式マニュアル（実践編）。実際にSS2を動かす場合の、設定ファイルの記述方法などの解説。
+   <li> <a href="manuals/SS2-Technical Documentation.pdf">SS2テクニカルドキュメンテーション (pdf)</a>
+              SS2の公式マニュアル（理論編）。SS2で用いられている数理モデルの説明。
+   <li> <a href="manuals/ISC-ALBWG_08_guide_to_SS2.pdf">SS2ガイド(pdf)</a>
+              かつてIATTCにいたSimon Hoyle(現SPC)が作成したSS2ガイド。実際に、北太平洋ビンナガでSS2をやるときに行ったパラメータ設定を丁寧に解説。実際にゼロからSS2の設定ファイルを書く場合は、公式マニュアルよりこちらのほうがわかりやすい。
+   <li> <a href="manuals/SS2-guide-JP.pdf">上の設定ガイドの日本語訳 (pdf)</a>
+   <li> <a href="manuals/iterative-reweighting_manual2.doc">体長データやCPUEへの重みづけを変えながら、SS2を収束させるための、実践的な手順</a> 理論的な側面は省いていますので、なぜ、このような操作を行う必要があるのかは、各自で考えてみてください。また、同様のことを自動で行う方法が、下記のdoautorunの関数です。
+</ul>
+
+
+<hr>
+<h3><font color="red">SS2の自動化＆結果の可視化のためのRによる関数群 </font><a href="example/all.R"> all.R </a></h3>
+
+<p>
+上のall.Rのファイルをダウンロード後、source("all.R")で、all.R内の関数を全て読み込んで使ってください。上のリンクに常に最新のバージョンがおいてあります。<br>
+更新履歴の詳細は <a href="updates_allR.html"> こちら </a>。
+</p>
+
+<p> 使い方
+<ul>
+<li> allplot.ss2: SS2の結果の簡易表示 <br><br>
+
+    例1： allplot.ss2(repfile="ss2.rep") # repfile="" で、repファイルの場所を指定する <br><br>
+
+この場合、結果の図はpdfで出力される。デフォルトの出力のファイル名はout.pdf。また、体長のフィットの表示には非常に時間がかかる（クロマグロのデータで５分くらい）ので、それを計算したくないときは、length.onのオプションをFにしてください。 <br><br>
+例2：allplot.ss2(repfile="ss2.rep",length.on=F)<br><br>
+    <ul>
+    <li> <a href="example/ss2_ex/out.html"> 作成されるファイルの例 </a> <br><br>
+
+    <li><a href="ex_R.html"> その他、詳しい解説 </a><br><br>
+    </ul>
+
+<li> doautorun: 有効サンプル数問題を回避するための、繰り返し重みづけ計算（Iterative reweighting）の自動実行
+    <ul> 
+    <li>ダウンロード後、source("all.R")で、all.R内の関数を全て読み込む
+    <li>doautorun.ss2の関数を使って、計算を実行。<br>
+    doautorun(datfile=NULL,initN.op=1,effN.op=3)
+    <li>計算に用いるファイル群は基本的に全て、SS2names.nam内で指定されているので、関数の引数を使って設定する値は、「収束基準」、「有効サンプルサイズの計算方法」「初期サンプルサイズの設定方法」など。また、オプションで、出力ファイル(repfile,parfileなど）の名前やディレクトリを指定することもできる。
+    <li><a href="manuals/IRW_chart.pdf"> iterative reweightingの手順詳細 (pdf)</a>
+    <li><a href="manuals/effective_sample_size.pdf"> iterative reweightingをなぜ行わなければならないのか？(pdf)</a>
+    <li><a href="Interactive-weighting/index.html"> 有効サンプルサイズ、初期サンプルサイズのオプションを変えたときの結果の違いの例（太平洋クロマグロ、2006年9月1日までのデータ）</a>
+    <li><a href="manuals/doautorun.html"> doautorunのhelpファイル</a><br><br>
+    </ul>
+
+<li> その他：VPAの出力結果を用いた将来予測 
+   <ul>
+   <li>ダウンロード後、source("all.R")で、all.R内の関数を全て読み込む
+   <li> bluefin.predictの関数を使って計算。
+   <li> <a href="manuals/Projection_usage.ppt">詳しい使い方＆Rのセットアップの仕方(パワーポイントファイル)</a>
+   <li> <a href="manuals/Projection_specification.pdf">プロジェクションの仕様</a>
+   </ul>
+</ul>
+
+
+<hr>
+
+<a href="../tuna.html"> マグロのtopに戻る </a>
+<br><br>
+</body> </html>

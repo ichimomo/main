@@ -1,0 +1,67 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=shift_jis">
+<link href="style.css" rel="stylesheet" type="text/css">
+<title>資源管理研修会用ＨＰ（２０１５）</title>
+</head>
+
+<body>
+<h3> 資源管理研修会用ＨＰ（２０１５） </h3>
+
+<hr>
+<p>
+<mytitle>事前準備（追加されることがあるので、実習直前に再度ご確認ください）</mytitle> <br>
+<ul>
+  <li> 1. Rのインストール <a href="R-install.pdf">やり方</a> <br> <br>
+  <li> 2. 追加パッケージのインストール<a href="R-package.pdf">やり方</a> 
+        <p>
+  　　　必要なパッケージ (2015/4/27更新．今後追加するかもしれませんので，講習直前にもう一度ご確認ください) <br>
+  　　　maps, mapdata, maptools, MASS
+  <li> 3. 簡単な使い方の実践 <a href="R-usage.pdf">やり方</a> <br> <br>
+  <li> 4. 実習で使うデータのダウンロード <a href="data.zip"> データ</a> ←こちらのリンクをクリックし、ダウンロードされるzipファイルを持ってきてください（このデータについても，当日までに更新するかもしれませんので，講習直前にもう一度ご確認ください）<br> <br> <font size="5" color="#ff0000"> <b> 5/12 06:30 ファイルを変更しました(run.txt)． それ以前にdata.zipをダウンロードされた方は，もう一度data.zipをダウンロードし直してください　</b> </font>
+</ul>
+
+
+<hr>
+<mytitle> Rの独習用URL</mytitle><br>
+<p> 
+Rは，独習用の様々なサイト・本があります．以下の様なサイトや本で，さわりだけでも勉強してきて頂けると，スムーズに進むと思います．
+<ul>
+<li> <a href="http://cse.naro.affrc.go.jp/takezawa/r-tips/r2.html"> サイト：R-Tips </a>　（基礎から応用まで）<br><br>
+<li> <a href="http://www.okada.jp.org/RWiki/"> サイト：RjpWiki </a> （様々なトピックのTipsが充実．辞書的な使い方）<br><br>
+<li> <a href="http://www.amazon.co.jp/exec/obidos/ASIN/4274067831/metaanalysis-22"> 本：The R-Tips </a> <br><br>
+<li> <a href="http://www.amazon.co.jp/exec/obidos/ASIN/4777511847/metaanalysis-22"> 本：データ解析環境「R」</a> <br><br>
+</ul>
+
+<hr>
+<mytitle> 講習の後半で扱うRVPAについての参考文献</mytitle><br>
+<p> 
+<ul>
+ <li> 市野川桃子・岡村 寛．「VPAを用いた我が国水産資源評価の統計言語Rによる統一的検討」　水産海洋研究　78（2）　104-113，2014　（講習会場で配布します）
+ </ul>
+
+
+<hr>
+<p>
+<mytitle>実習用プレゼンファイル〈講習直前または講習後にアップします）</mytitle> <br>
+<ul>
+  <li> 前半:　Rの基礎とデータマイニング（市野川）<a href="ichinokawa1-2.ppt"> プレゼンファイル1</a> <a href="ichinokawa3.pptx"> プレゼンファイル2</a> 
+   <ul>
+     <li>データの読み込み
+     <li> 様々なデータの集計、ソート、整形
+     <li> プロット
+     <li> 時空間データのプロット
+     <li> 簡単な統計解析
+   </ul>
+  <li> 後半：VPAとRVPA（岡村）<a href="RVPA入門.pptx"> プレゼンファイル</a> 
+</ul>
+
+<hr>
+<center>
+<a href="../index.html"> Back to the top page </a>
+</center>
+
+</body>

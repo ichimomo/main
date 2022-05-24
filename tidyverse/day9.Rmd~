@@ -1,0 +1,56 @@
+---
+title: "連載：tidyverse"
+author: "Momoko Ichinokawa"
+date: "`r Sys.Date()`"
+output:
+  md_document
+---
+
+```{r, echo=FALSE}
+library(knitr)
+library(rmarkdown)
+library(tidyverse, quietly = TRUE)
+#render("text.Rmd")
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+#                     cache=TRUE,
+               prompt=FALSE,
+               tidy=FALSE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(fig.width=6,fig.height=3.5)
+```
+
+## 9回目：purrr〜もうforもlapplyも使わない〜
+
+第９回目はtidyverseの中のパッケージの一つpurrrで提供されるさまざまな`map_何とか`の関数について解説します。purrrは、通常のRにおけるapply系の関数forループに代わる機能を提供します。purrrについてはいろいろ便利な機能があるようですが、私も代表的なものしか使ったことがないので、知っている範囲で解説します。網羅的な機能の一覧は[chetsheet](https://github.com/rstudio/cheatsheets/raw/master/purrr.pdf)を見るとわかりやすいと思います。
+
+で、purrrってどんなときに使うかというと、（私個人の場合ですが）
+
+- 複数の計算結果があります
+- それに一括して何らかの処理を施したい
+- そしてその結果を一覧したい
+  
+
+
+```{r, echo=TRUE, fig.width=7,fig.height=5}
+library(frasyr)
+
+
+
+```
+
+### まとめ
+
+思いがけず長くなってしまいましたがggplotを使うといい感じの図がすぐに作れるようになるので、ぜひ頑張って勉強してみてください。繰り返しになりますがポイントは
+
+- 出来上がりをある程度イメージした整然データをまず用意する（凡例やfacet_wrapしたときのタイトルは列名がそのまま使われるので、列名もそのままグラフで表示できるように定義しておいたほうが後々楽です（例：漁期年なら`fyear`でなく`Fishing_year`とするなど）
+- 基本的な流れ（`data %>% ggplot() + geom_point(aes(y=y, x=x))`）とある程度の関数（`theme_bw(), facet_wrap()`）は頑張って覚える。残りはググる。
+- 作成されたグラフオブジェクトは、細かい設定の上書き可能。fraysrなどのパッケージで作成されたグラフでも、手元で微調整できる（軸名を変えたりタイトルを追加したり）
+
+です。ではでは。
+
+

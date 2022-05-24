@@ -1,0 +1,444 @@
+#  program 読み込み
+
+source("rvpa1.2.r")
+
+#  dataの読み込み
+
+caa <- read.csv("caa.csv",row.names=1)
+maa <- read.csv("maa.csv",row.names=1)
+waa <- read.csv("waa.csv",row.names=1)
+M <- read.csv("M.csv",row.names=1)
+index <- read.csv("index.csv",row.names=1)
+
+# dataの整形
+dat <- data.handler(caa, waa, maa, index, M)
+
+# rvpa実行
+
+vout1 <- vpa(dat,tf.year=1997:1999,Pope=TRUE,fc.year=1998:2000,alpha=1,p.init=0.5) 
+
+# 初期値に注意
+
+vout11 <- vpa(dat,tf.year=1997:1999,Pope=TRUE,fc.year=1998:2000,alpha=1,p.init=2) 
+
+#
+
+plot(1991:2000,colSums(vout1$naa),col="blue",cex=2,pch=16,xlab="Year",ylab="N")
+lines(1991:2000,dat$index,col="red",lwd=3)
+legend(1997, 2000, c("vpa","index"),pch=c(16,NA),lwd=c(NA,3),col=c("blue","red"),cex=2)
+ 
+# > vout1$term.f
+# [1] 0.6793949
+# > vout11$term.f
+# [1] 5.720814e-05
+
+## vout2; チューニング，選択率updateなし
+vout2 <- vpa(dat,tune=TRUE,sel.update=FALSE,Pope=TRUE,
+             tf.year=NULL,sel.f=vout1$saa$"2000", # 選択率の仮定
+             abund=c("N"),min.age=c(0),max.age=c(6), # 資源量指数の設定
+             alpha=1,p.init=0.5,fc.year=1998:2000)
+
+## vout3; チューニング，選択率update
+vout3 <- vpa(dat,tune=TRUE,sel.update=TRUE,Pope=TRUE,
+             tf.year=1997:1999,sel.f=vout1$saa$"2000", 
+             abund=c("N"),min.age=c(0),max.age=c(6), # 資源量指数の設定
+             alpha=1,p.init=0.5,max.dd = 0.00001,fc.year=1998:2000)
+
+## チューニング，選択率全推定
+vout4 <- vpa(dat,tune=TRUE,sel.update=FALSE,term.F="all",
+             tf.year=NULL,sel.f=NULL,
+             abund=c("N"),min.age=c(0),max.age=c(6), # 資源量指数の設定
+             alpha=1,p.init=0.5,max.dd = 0.00001,fc.year=1998:2000)
+
+#
+
+par(mfrow=c(1,2))
+plot(names(dat$index),as.numeric(dat$index),xlab="Year",ylab="Index",col="red",cex=2,pch=16,main="vout3")
+lines(names(dat$index),vout3$pred.index,lwd=3,col="blue")
+plot(names(dat$index),as.numeric(dat$index),xlab="Year",ylab="Index",col="red",cex=2,pch=16,main="vout4")
+lines(names(dat$index),vout4$pred.index,lwd=3,col="blue")
+
+#
+
+par(mfrow=c(1,2))
+resid <- as.numeric(log(vout3$pred.index) - log(dat$index))
+plot(resid,type="b",col="green",pch=17,lwd=4,cex=2,lty=2)
+acf(resid) 
+
+# bootstrap
+
+x <- rnorm(10)
+m <- mean(x)
+
+bx <- matrix(sample(x,10000,replace=TRUE),ncol=10)
+bm <- rowMeans(bx)
+
+par(mfrow=c(1,1))
+hist(bm,col="green")
+abline(v=m,lwd=5,col="red",lty=2)
+
+#
+
+# boot.sim1 <- boo.vpa(vout3,B=1000,method="n")
+boot.sim1 <- boo.vpa(vout3,B=10,method="n")
+Year <- colnames(dat$caa)
+ssb.boot <- sapply(boot.sim1,function(x) colSums(x$ssb))
+x <- t(apply(ssb.boot,1,quantile,probs=c(0.05,0.5,0.95)))
+matplot(Year,x,ylim=c(0,max(x)),col=c("orange","blue","orange"),type=c("l","b","l"),pch=16,lty=c(2,1,2),lwd=4,ylab="Spawning Biomass")
+
+#  Reference points
+
+byear <- 1998:2000
+rps.year <- 1991:2000
+
+sel <- vout3$saa["2000"]
+na <- nrow(sel)
+M <- dat$M[,1]
+waa <- rowMeans(dat$waa[,colnames(dat$waa) %in% byear])
+maa <-rowMeans(dat$maa[,colnames(dat$maa) %in% byear])
+max.age <- Inf
+Pope <- TRUE
+rps <- vout3$naa[1,colnames(vout3$ssb) %in% byear]/colSums(vout3$ssb[,colnames(vout3$ssb) %in% byear])
+
+# Fmax
+
+Fr <- seq(0,2,by=0.01)
+YPR <- sapply(Fr, function(Fr) sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$ypr))
+Fmax <- Fr[which.max(YPR)]
+
+plot(Fr,YPR,type="l",col="violet",lwd=5)
+abline(v=Fmax,col="red",lty=2,lwd=5)
+
+# F0.1
+
+DF0 <- sum(calc.rel.abund(t(sel),10^(-6),na,M,waa,maa,max.age=max.age,Pope=Pope)$ypr)/10^(-6)
+est.F0.1 <- function(Fr) {
+  (sum(calc.rel.abund(t(sel),Fr+10^(-6),na,M,waa,maa,max.age=max.age,Pope=Pope)$ypr)-sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$ypr))/(10^(-6))-0.1*DF0
+}
+F0.1 <- uniroot(est.F0.1,c(0,1))$root
+
+plot(Fr,YPR,type="l",col="violet",lwd=5)
+abline(v=Fr[which.max(YPR)],col="gray",lty=3,lwd=5)
+abline(v=F0.1,col="red",lty=2,lwd=5)
+
+plot(as.numeric(vout3$naa[1,]),colSums(vout3$ssb),xlim=c(0,1250),ylim=c(0,120),xlab="R",ylab="SSB",col="blue",cex=2,pch=20)
+abline(a=0,b=median(as.numeric(colSums(vout3$ssb)/vout3$naa[1,])),col="orange",lwd=4,lty=2)
+
+#  Fmed
+
+SPRmed <- median(as.numeric(colSums(vout3$ssb)/vout3$naa[1,]))
+est.Fmed <- function(Fr) sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$spr)-SPRmed
+Fmed <- uniroot(est.Fmed,c(0,1))$root
+
+SPR <- sapply(Fr, function(Fr) sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$spr)/SPR0)
+plot(Fr,SPR,type="l",col="violet",lwd=5)
+abline(v=Fmed,col="red",lty=2,lwd=5)
+
+#  %SPR
+
+SPR0 <- sum(calc.rel.abund(t(sel),0,na,M,waa,maa,max.age=max.age,Pope=Pope)$spr)
+p <- 0.4
+est.Fpspr <- function(Fr) sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$spr)/SPR0-p
+Fpspr <- uniroot(est.Fpspr,c(0,1))$root
+
+plot(Fr,SPR,type="l",col="violet",lwd=5)
+abline(v=Fpspr,col="red",lty=2,lwd=5)
+
+# MSY
+
+MSY.EST <- function(res,
+  SR.rel="HS",
+  waa.year=NULL, 
+  maa.year=NULL,
+  M.year=NULL,
+  rps.year = NULL, 
+  transformation="log",
+  g1 = 0.01,
+  sel=NULL,
+  max.age = Inf,
+  sigma=0.5,
+  n.gi=30,
+  bcor=TRUE,
+  min.F=0,
+  max.F=2,
+  int.F=0.001,
+  p.init=NULL){
+  #
+
+  argname <- ls()
+  arglist <- lapply(argname,function(x) eval(parse(text=x)))
+  names(arglist) <- argname
+  
+  caa <- res$input$dat$caa
+  naa <- res$naa
+  ssb <- res$ssb
+  ny <- ncol(naa)
+  years <- dimnames(naa)[[2]]
+  ages <- dimnames(caa)[[1]]
+  
+  if(is.null(sel)){
+    sel <- sweep(res$faa,2,apply(res$faa,2,max),FUN="/")
+  }
+   
+  na <- nrow(caa)
+
+  Pope <- res$input$Pope
+
+  if(is.null(waa.year)) waa.year <- rev(years)[1]
+  if(is.null(maa.year)) maa.year <- rev(years)[1]
+  if(is.null(M.year)) M.year <- rev(years)[1]
+  if(is.null(rps.year)) rps.year <- as.numeric(colnames(res$naa))
+  
+  if(is.null(waa))  waa <- apply(as.matrix(as.data.frame(res$input$dat$waa)[as.character(waa.year)]),1,mean)
+  if(is.null(M))  M <- apply(as.matrix(as.data.frame(res$input$dat$M)[as.character(M.year)]),1,mean)
+  if(is.null(maa))  maa <- apply(as.matrix(as.data.frame(res$input$dat$maa)[as.character(maa.year)]),1,mean)
+
+    SSB <- as.numeric(colSums(ssb))
+    R <- as.numeric(res$naa[1,])
+ 
+   min.SSB <- min(SSB)
+   max.SSB <- max(SSB)
+   
+    SR.func <- function(p) {
+      a <- exp(p[1])
+      if (SR.rel=="HS"){
+        b <- (max.SSB-min.SSB)/(1+exp(-p[2]))+min.SSB
+        pred.R <- ifelse(SSB >= b, a*b, a*SSB)
+        if (transformation=="id") obj <- sum((R-pred.R)^2)
+        if (transformation=="log")  obj <- sum((log(R)-log(pred.R))^2)
+      }
+      if (SR.rel=="MR"){
+        b <- (max.SSB-min.SSB)/(1+exp(-p[2]))+min.SSB
+        pred.R <- a*(SSB+sqrt(b^2+g1^2/4)-sqrt((SSB-b)^2+g1^2/4))
+        if (transformation=="id") obj <- sum((R-pred.R)^2)
+        if (transformation=="log")  obj <- sum((log(R)-log(pred.R))^2)
+      }
+      if (SR.rel=="BH"){
+        b <- exp(p[2])
+        pred.R <- a*SSB/(1+b*SSB)
+        if (transformation=="id") obj <- sum((R-pred.R)^2)
+        if (transformation=="log")  obj <- sum((log(R)-log(pred.R))^2)
+      }
+      if (SR.rel=="RI"){
+        b <- exp(p[2])
+        pred.R <- a*SSB*exp(-b*SSB)
+        if (transformation=="id") obj <- sum((R-pred.R)^2)
+        if (transformation=="log")  obj <- sum((log(R)-log(pred.R))^2)
+      }
+      obj
+    }
+    
+    if(is.null(p.init)){
+      if (SR.rel=="HS" | SR.rel=="MR") p.init <- c(log(median(R/SSB)),logit((median(SSB)-min.SSB)/(max.SSB-min.SSB)))
+      if (SR.rel=="BH" | SR.rel=="RI") p.init <- c(log(median(R/SSB)),-log(max.SSB))
+    }
+        
+    out <- nlm(SR.func,c(1,0))
+    p <- out$estimate
+    a <- exp(p[1])
+    
+    if (SR.rel=="HS" | SR.rel=="MR") b <- (max.SSB-min.SSB)/(1+exp(-p[2]))+min.SSB
+    if (SR.rel=="BH" | SR.rel=="RI") b <- exp(p[2])
+        
+    out$sr.par <- c(a,b)
+   
+    #
+   
+     require(statmod)
+     gi <- gauss.quad(n.gi,kind="hermite") 
+     x.gi <- gi$nodes
+     wex2.gi <- gi$weights*exp(x.gi^2)
+
+    Fr <- seq(min.F,max.F,by=int.F)
+      
+    if (SR.rel=="HS" | SR.rel=="MR"){
+      R0 <- a*b
+               
+      YPR.f0 <- function(Fr,x,sel){
+        N.HS <- R0*calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund
+        SSB.HS <- sum(N.HS*waa*maa)*exp(sigma*x-bcor*sigma^2/2)
+        ifelse(SSB.HS < b,0,R0*sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$ypr))
+      }
+      
+      YPR.f <- function(Fr,x) mean(apply(sel,2,YPR.f0,Fr=Fr,x=x))
+
+      YPR <- sapply(Fr, function(Fr) sum(YPR.f(Fr,x.gi)*dnorm(x.gi)*wex2.gi))
+         
+      Fmsy <- Fr[which.max(YPR)]
+      MSY <- max(YPR,na.rm=TRUE)
+     
+      Abund0 <- function(Fr,sel)  R0*calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund
+      Abund <- function(Fr)  rowMeans(apply(sel,2,Abund0,Fr=Fr))
+
+      Nmsy <-  Abund(Fmsy)
+      Bmsy <- Nmsy*waa
+      SSBmsy <- Bmsy*maa
+      
+      N0 <- Abund(0)
+      B0 <- N0*waa
+      SSB0 <- B0*maa 
+    }    
+    
+    if (SR.rel=="BH"){    
+       YPR.f0 <- function(Fr,x,sel){
+        R <- (a*sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund*waa*maa)-1)/(b*sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund*waa*maa))
+        R <- ifelse(R >=0, R, 0)
+        N.BH <- R*calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund
+        SSB.BH <- sum(N.BH*waa*maa)*exp(sigma*x-bcor*sigma^2/2)
+        a*SSB.BH/(1+-b*SSB.BH)*sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$ypr)
+      }
+            
+      YPR.f <- function(Fr,x) mean(apply(sel,2,YPR.f0,Fr=Fr,x=x))
+
+      YPR <- sapply(Fr, function(Fr) sum(YPR.f(Fr,x.gi)*dnorm(x.gi)*wex2.gi))
+      
+      Fmsy <- Fr[which.max(YPR)]
+      MSY <- max(YPR,na.rm=TRUE)
+      
+      Abund0 <- function(Fr,sel)  {
+        R <- (a*sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund*waa*maa)-1)/(b*sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund*waa*maa))
+        R*calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund
+      }
+      Abund <- function(Fr)  rowMeans(apply(sel,2,Abund0,Fr=Fr))
+
+      Nmsy <-  Abund(Fmsy)
+      Bmsy <- Nmsy*waa
+      SSBmsy <- Bmsy*maa
+      
+      N0 <- Abund(0)
+      B0 <- N0*waa
+      SSB0 <- B0*maa 
+    }       
+
+    if (SR.rel=="RI"){    
+       YPR.f0 <- function(Fr,x,sel){
+        R <- log(a*sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund*waa*maa))/(b*sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund*waa*maa))
+        R <- ifelse(R >=0, R, 0)
+        N.RI <- R*calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund
+        SSB.RI <- sum(N.RI*waa*maa)*exp(sigma*x-bcor*sigma^2/2)
+        a*SSB.RI*exp(-b*SSB.RI)*sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$ypr)
+      }
+            
+      YPR.f <- function(Fr,x) mean(apply(sel,2,YPR.f0,Fr=Fr,x=x))
+
+      YPR <- sapply(Fr, function(Fr) sum(YPR.f(Fr,x.gi)*dnorm(x.gi)*wex2.gi))
+      
+      Fmsy <- Fr[which.max(YPR)]
+      MSY <- max(YPR,na.rm=TRUE)
+      
+      Abund0 <- function(Fr,sel)  {
+        R <- log(a*sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund*waa*maa))/(b*sum(calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund*waa*maa))
+        R*calc.rel.abund(t(sel),Fr,na,M,waa,maa,max.age=max.age,Pope=Pope)$rel.abund
+      }
+      Abund <- function(Fr)  rowMeans(apply(sel,2,Abund0,Fr=Fr))
+
+      Nmsy <-  Abund(Fmsy)
+      Bmsy <- Nmsy*waa
+      SSBmsy <- Bmsy*maa
+      
+      N0 <- Abund(0)
+      B0 <- N0*waa
+      SSB0 <- B0*maa 
+    }       
+
+   out$sigma <- sigma
+   out$bcor <- bcor
+   
+   msy <- c(MSY, Fmsy)
+   names(msy) <- c("MSY","Fmsy")
+   
+   out$MSY <- msy
+   out$Nmsy <- Nmsy
+   out$Bmsy <- Bmsy
+   out$SSBmsy <- SSBmsy
+
+  out$N0 <- N0
+  out$B0 <- B0
+  out$SSB0 <- SSB0
+  
+  return(out)
+}
+
+logit <- function(x) log(x/(1-x))
+
+#
+
+res.msy0 <- MSY.EST(vout3,SR.rel="HS",sigma=0)
+res.msy1 <- MSY.EST(vout3,SR.rel="HS",sigma=0.5)
+
+plot(Fr,YPR,type="l",col="violet",lwd=5)
+abline(v=res.msy0$MSY[2],col="red",lty=2,lwd=5)
+abline(v=res.msy1$MSY[2],col="green",lty=2,lwd=5)
+legend(1,0.04,c("sigma=0","sigma=0.5"),col=c("red","green"),lwd=5)
+
+#  RVPA reference points 
+
+rout <- ref.F(vout3,
+                waa.year=byear,maa.year=byear,
+                M.year=byear,rps.year=rps.year,
+                max.age=Inf,pSPR=c(40),
+                Fspr.init=0.2)
+rout$summary #　結果の概観
+
+abline(v=Fpspr)
+text(0.15,0.04,"F40%SPR")
+
+##  future projection
+
+naa.f <- matrix(NA,nrow=7,ncol=11)
+naa.f[,1] <- as.numeric(unlist(vout3$naa["2000"]))
+ssb.f <- numeric(11)
+ssb.f[1] <-  sum(as.numeric(unlist(vout3$ssb["2000"])))
+
+rps.med <- median(as.numeric(rps))
+
+F.f <-  vout3$Fc.at.age
+
+for (i in 1:10){
+  pred.n <- naa.f[,i]*exp(-M-F.f)
+  naa.f[2:7,i+1] <- pred.n[1:6]
+  naa.f[7,i+1] <- naa.f[7,i+1]+pred.n[7]
+  naa.f[1,i+1] <- rps.med*ssb.f[i]
+  ssb.f[i+1] <- sum(naa.f[,i+1]*waa*maa)
+}
+
+par(mfrow=c(1,1), mar=c(4,4,4,8), las=1)
+
+plot(ssb.f,col="red",pch=16,cex=1.5,ylim=c(0,60),xlab="Year",ylab="")
+points(naa.f[1,]/max(naa.f[1,])*max(ssb.f)*0.5,col="blue",pch=17,cex=1.5)
+legend(8,15,c("SSB","R"),pch=c(16,17),col=c("red","blue"),cex=1.5)
+
+axis(side=4, c(150,300,450,600)/max(naa.f[1,])*max(ssb.f)*0.5, c(150,300,450,600))
+ 
+#  RVPA future projection
+
+par(mfrow=c(2,2))
+fout <- future.vpa(vout3,
+                    # ↓NULLの場合、vout$Fc.at.aが用いられる
+                    currentF=NULL, 
+                    # ↓管理がスタートする年からcurrentFに乗じられる係数
+                    #   ここでは,Fmedを使っている
+                    multi=rout$summary$Fmed[3], 
+                    nyear=15,start.year=2001,N=1000,
+                    #　↓ABCを計算する年
+                    ABC.year=2002, 
+                    waa.year=byear,maa.year=byear,M.year=byear,
+                    rec.new=NULL,
+                    #　↓将来の加入関数とその引数
+                    recfunc=RPS.simple.rec,
+                    rec.arg=list(rps.year=rps.year,
+                      upper.ssb=Inf,bias.corrected=TRUE,rpsmean=FALSE,
+                      upper.recruit=Inf))
+
+## RVPA ABC calculation
+SSBcur.sim <- rev(colSums(vout3$ssb))[1]
+ABC.sim <- getABC(res.vpa=vout3, # vpaの結果
+                  res.ref=rout, # ref.Fの結果
+                  res.future=fout, # future.vpaの結果 
+                  target.year=2005, # 確率を計算する基準の年
+                  Blim=200,N=1000,SSBcur=SSBcur.sim,
+                  # ↓ABCの基礎となる管理基準値（names(rout$summary)から選ぶ）
+                  ref.case=c("Fcurrent","Fmed"),
+                  multi=c(1,1)) # 上の管理基準値に対する乗数
+ABC.sim$ABC # 要約表
+

@@ -1,0 +1,540 @@
+---
+title: "RVPAにおける将来予測・管理基準値計算チュートリアル"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+   highlight: pygments
+   theme: cerulean
+   toc: yes
+   toc_depth: 3
+   toc_float: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+par(mar=c(4,4,3,1))
+```
+
+## 1. 事前準備
+- データの読み込み，RVPA関数の読み込みなど
+- ここで使う関数とデータへのリンク
+<!---    - <a href="rvpa1.9.2.r" download="rvpa1.9.2.r">rvpa1.9.2.r</a>  --->
+<!---    - <a href="future1.11.r" download="future1.11.r">future1.11.r</a>     --->
+    - <a href="rvpa1.9.2.r">rvpa1.9.2.r</a>  
+    - <a href="future1.11.r">future1.11.r</a>   
+    - [例データ](http://cse.fra.affrc.go.jp/ichimomo/fish/data.zip) (展開して作業フォルダにデータを置く)
+
+
+```{r data-read}
+# 関数の読み込み
+source("rvpa1.9.2.r")
+source("future1.11.r")
+
+# データの読み込み
+caa <- read.csv("caa_pma.csv",row.names=1)
+waa <- read.csv("waa_pma.csv",row.names=1)
+maa <- read.csv("maa_pma.csv",row.names=1)
+dat <- data.handler(caa=caa, waa=waa, maa=maa, M=0.5)
+names(dat)
+
+```
+
+
+## 2. VPAによる資源量推定
+
+今後はvpa関数の返り値，res.pmaを使って将来予測計算をおこなっていくので，そのためにvpaを実施します．(この辺はあまり詳しく解説しません．)
+
+```{r vpa}
+# VPAによる資源量推定
+res.pma <- vpa(dat,fc.year=2009:2011,rec=585,rec.year=2011,tf.year = 2008:2010,
+               term.F="max",stat.tf="mean",Pope=TRUE,tune=FALSE,p.init=1.0)
+```
+
+```{r}
+res.pma$Fc.at.age # 将来予測などで使うcurrent F (fc.yearのオプションでいつのFの平均かが指定される)
+plot(res.pma$Fc.at.age,type="b",xlab="Age",ylab="F",ylim=c(0,max(res.pma$Fc.at.age)))
+```
+
+
+
+## 3. 再生産関係を仮定しない管理基準値の計算
+- ref.F関数を使います
+- %SPRやFmaxなど、再生産関係を仮定しない管理基準値を計算します
+- 計算結果はrres.pmaに格納されます
+- YPR, SPR曲線とFcurrent (```res.pma$Fc.at.a```に入っている値です), Fmax, Fmed, F0.1などの位置が表示されます
+
+```{r ref.F, fig.cap="**図：plot=TRUEで表示されるYPR, SPR曲線**"}
+byear <- 2009:2011 # 生物パラメータを平均する期間を2009年から2011年とする
+rres.pma <- ref.F(res.pma, # VPAの計算結果
+                  waa.year=byear, maa.year=byear, M.year=byear, # weight at age, maturity at age, Mは2009から2011年までの平均とする
+                  rps.year=2000:2011, # Fmedを計算するときに用いるRPSの範囲
+                  max.age=Inf, # SPR計算で仮定する年齢の最大値 
+                  pSPR=c(10,20,30,35,40), # F_%SPRを計算するときに，何パーセントのSPRを計算するか
+                  Fspr.init=1)
+```
+
+- 結果のサマリーは```rres.pma$summary```によって見れます
+- max: F at ageの最大値，mean: F at ageの平均値，Fref/Fcur: Fcurrentを分母にしたときのF管理基準値の比
+- この結果から，現状のF（Fcurrent）はFmedとほぼ同等（Fref/Fcur=0.96なので），F％SRP=10％くらいであることがわかります
+
+```{r ref.F2}
+rres.pma$summary
+```
+
+## 4. 再生産関係の推定
+### データの作成
+- get.SRdataを使って再生産関係のフィット用のデータを作る
+- get.SRdata関数では，```rownames(res.pma$naa)```を参照し、必要な年齢分のSSBをずらしたデータを作成する
+- yearは加入年
+
+```{r SRdata}
+# VPA結果を使って再生産データを作る
+SRdata <- get.SRdata(res.pma)
+head(SRdata)
+```
+
+```{r}
+# SSBとRのデータだけを持っている場合
+SRdata0 <- get.SRdata(R.dat=exp(rnorm(10)),SSB.dat=exp(rnorm(10)))
+# 特定の期間のデータだけを使う場合
+SRdata0 <- get.SRdata(res.pma,years=1990:2000) 
+```
+
+### モデルのフィット
+- HS,BH,RIをフィットし，再生産関係のパラメータを推定する
+- 結果のオブジェクトのAICcにAICcの値が入っているので，それを比較し，再生産関係を決定する
+```{r SRfit}
+# Hockey-Stick再生産関係式をフィット
+HS.par <- fit.HS(SRdata,er.log=TRUE,gamma1=0.001,do.profile=TRUE)
+HS.par$pars    
+```
+
+```{r}
+# Beverton-Holtのフィット
+BH.par <- fit.BH(SRdata,er.log=TRUE)
+BH.par$pars    
+
+##  Rickerのフィット
+RI.par <- fit.RI(SRdata,er.log=TRUE)
+RI.par$pars        
+
+# AICcの比較
+c(HS.par$AICc,BH.par$AICc,RI.par$AICc)
+```
+
+- 結果の図示
+```{r, fig.cap="図：**観測値（○）に対する再生産関係式．plot=赤がHS，緑と青がBH, RIだが両者はほとんど重なっていて見えない**"}
+plot.SRdata(SRdata)
+points(HS.par$pred$SSB,HS.par$pred$R,col=2,type="l",lwd=3)
+points(BH.par$pred$SSB,BH.par$pred$R,col=3,type="l",lwd=3)    
+points(RI.par$pred$SSB,RI.par$pred$R,col=4,type="l",lwd=3)
+```
+
+### モデルのフィット（自己相関の考慮）
+- 西嶋さん作成の汎用関数(fit.SR)を使うことで，再生産関係の自己相関を考慮してパラメータを推定することができます
+- AR=0で自己相関の考慮なし、AR=1で過去１年分の自己相関が考慮できる（１年分しか対応していない）
+- 引数SRでHS, BH, RIを選べる
+- 引数methodで最小二乗法（L2)か最小絶対値法（L1）かも選べる
+- **自己相関あり・なしでAICcを比較し、自己相関を入れたほうがいいかどうか判断する**
+- $\log(R_t)=\log(HS(SSB_t))+\rho \times {\log(R_{t-1})-\log(HS(SSB_{t-1}))}$
+- $\log(R_t)~N(\log(R_t),\sigma^2)$
+
+```{r}
+HS.par2 <- fit.SR(SRdata,SR="HS",method="L2",AR=1,hessian=FALSE)
+```
+
+- TMBオプション(```TMB=TRUE```)を使う場合（**できるかどうかわかりません**）\
+[cppファイル](http://cse.fra.affrc.go.jp/ichimomo/fish/) をダウンロードして，作業フォルダに置く
+```{r, eval=FALSE}
+# install.packages("TMB")　#TMBがインストールされてなければ
+library(TMB)
+compile("autoregressiveSR2.cpp")
+dyn.load(dynlib("autoregressiveSR2"))
+res3 <- fit.SR(SRdata,SR="HS",method="L2",AR=1,TMB=TRUE) #marginal likelihood
+
+```
+
+### モデル診断：尤度プロファイル
+
+### モデル診断：ブートストラップ
+
+## 5. 将来予測
+
+** future.vpa関数を使います**
+- recfuncの引数に用いる再生産関係の関数を，rec.argにrecfuncに対する引数（再生産関係のパラメータ）を入れる
+- 利用できる再生産関係の関数
+     - HS.rec: ホッケー・スティック
+     - BH.rec: ベバートン・ホルト
+     - RI.rec: リッカー
+-rec.argの引数にresample=TRUEとし、residに残差を入れると残差リサンプリングによる将来予測ができます
+```{r future.vpa, fig.cap="**図：is.plot=TRUEで表示される図．資源量(Biomass)，親魚資源量(SSB), 漁獲量(Catch)の時系列．決定論的将来予測（Deterministic），平均値（Mean），中央値(Median)，80％信頼区間を表示**"}
+fres.HS <- future.vpa(res.pma,
+                      multi=1,
+                      nyear=50, # 将来予測の年数
+                      start.year=2012, # 将来予測の開始年
+                      N=10, # 確率的計算の繰り返し回数
+                      ABC.year=2013, # ABCを計算する年
+                      waa.year=2009:2011, # 生物パラメータの参照年
+                      maa.year=2009:2011,
+                      M.year=2009:2011,
+                      is.plot=TRUE, # 結果をプロットするかどうか
+                      seed=1,
+                      recfunc=HS.rec, # 再生産関係の関数
+                      # recfuncに対する引数
+                      rec.arg=list(a=HS.par$pars$a,b=HS.par$pars$b,gamma=HS.par$gamma,
+                                   sd=HS.par$pars$sigma,bias.correction=TRUE,resample=TRUE,resid=HS.par$resid))
+
+```
+
+** 同じ引数を使ってもう一度将来予測をする場合 **
+- ```fres.HS$input```に、将来予測で使った引数が入っているので、それにdo.call(関数、引数)すると同じ計算を繰り返せる
+```{r}
+fres.HS2 <- do.call(future.vpa,fres.HS$input)
+```
+
+- fres.HS$inputを上書きすることで，同じ引数を使いながら設定を少しだけ変更した将来予測が実行できる
+- 引数```multi```がcurrent Fへの乗数になる
+- たとえばmulti=1からmulti=0.5に変更する例は以下のとおり
+```{r}
+# 引数をinput.tmpに代入．
+input.tmp <- fres.HS2$input
+# 引数の一部を変える
+input.tmp$multi <- 0.5 # current Fの1/2で漁獲
+fres.HS3 <- do.call(future.vpa,input.tmp)
+```
+
+** plot.futures関数を使って複数の結果を比較 **
+```{r, fig.cap="図：plot.futures関数の結果"}
+par(mfrow=c(2,2))
+plot.futures(list(fres.HS,fres.HS3),legend.text=c("F=Fcurrent","F=0.5Fcurrent"),target="SSB")
+plot.futures(list(fres.HS,fres.HS3),legend.text=c("F=Fcurrent","F=0.5Fcurrent"),target="Catch")
+plot.futures(list(fres.HS,fres.HS3),legend.text=c("F=Fcurrent","F=0.5Fcurrent"),target="Biomass") 
+```
+
+### (5-1) Fの設定やFrec
+
+将来予測における漁獲のシナリオ
+- future.vpaの引数```ABC.year```で指定した年から，Fcurrent × multiによるFで漁獲される
+- ABC.year-1年まではFcurrentによる漁獲
+- Frecに引数を与えることで，任意の資源量に任意の確率で回復させるような将来予測ができます．
+
+**Frecのオプション**
+
+|オプション             |説明                              |
+|:----------------------|:---------------------------------|
+|stochastic | 確率的将来予測をもとにFrecを計算するかどうか |
+|future.year | 条件を満たしているかどうかを判断する年 |
+|Blimit | 条件として使われる閾値 |
+|scenario | ="blimit": Blimitを**下回る**確率をtarget.probsにする |
+|         | ="catch.mean": future.year年の平均漁獲量をBlimitの値と一致させる |
+|         | ="ssb.mean": future.year年の平均親魚量をBlimitの値と一致させる | 
+|target.probs| scenario="blimit"のときに目的とする確率（パーセントで指定）|
+|Frange | 探索するFの範囲．指定しない場合，c(0.01,multi*2)の範囲で探索しますので，うまく推定できない場合はfuture.vpaの引数multiを変えるか，このオプションでそれらしいFの値に限定してください|
+
+
+```{r, fig.cap="Frecオプションを使った場合は、結果の図に目的とする年・資源量のところに赤線が入ります。これが将来予測の結果と一致しているか確かめてください。もし一致していない場合、multi（初期値）かFrecのオプションのFrangeを指定してやり直してください"}
+# たとえば現状の資源量に維持するシナリオ
+fres.currentSSB <- future.vpa(res.pma,
+                      multi=0.8,
+                      nyear=50, # 将来予測の年数
+                      start.year=2012, # 将来予測の開始年
+                      N=100, # 確率的計算の繰り返し回数
+                      ABC.year=2013, # ABCを計算する年
+                      waa.year=2009:2011, # 生物パラメータの参照年
+                      maa.year=2009:2011,
+                      M.year=2009:2011,seed=1,
+                      is.plot=TRUE, # 結果をプロットするかどうか
+                      Frec=list(stochastic=TRUE,future.year=2023,Blimit=rev(colSums(res.pma$ssb))[1],scenario="blimit",target.probs=50),
+                      recfunc=HS.rec, # 再生産関係の関数
+                      # recfuncに対する引数
+                      rec.arg=list(a=HS.par$pars$a,b=HS.par$pars$b,gamma=HS.par$gamma,
+                                   sd=HS.par$pars$sigma,bias.corrected=TRUE))
+```
+
+### (5-2) 再生産関係
+
+** 残差リサンプリングではなく，SDを与えて対数正規分布の誤差を仮定する場合** 
+- resample=FALSEとする
+```{r}
+# 残差リサンプリングによる将来予測
+fres.HS4 <- future.vpa(res.pma,
+                          multi=1,
+                          nyear=50, # 将来予測の年数
+                          start.year=2012, # 将来予測の開始年
+                          N=10, # 確率的計算の繰り返し回数
+                          ABC.year=2013, # ABCを計算する年
+                          waa.year=2009:2011, # 生物パラメータの参照年
+                          maa.year=2009:2011,
+                          M.year=2009:2011,
+                          is.plot=TRUE, # 結果をプロットするかどうか
+                          seed=1,
+                          recfunc=HS.rec, # 再生産関係の関数（HS.rec=Hockey-stick)                                
+                          rec.arg=list(a=HS.par$pars$a,b=HS.par$pars$b,gamma=HS.par$gamma,
+                                       sd=HS.par$pars$sigma,bias.correction=TRUE,
+                                       resample=TRUE,resid=HS.par$resid))
+```
+
+** 西嶋さん作成の汎用関数(fit.SR)で自己相関ありの再生産関係を推定した場合の将来予測
+- 自己相関を仮定した将来予測をおこなうほうが良いでしょう
+- 平均値は変わりませんが、分散は変わります
+
+```{r}
+# HS.recARを使い、fit.SRからのパラメータを使ってください
+fres.HS5 <- future.vpa(res.pma,
+                          multi=1,
+                          nyear=50, # 将来予測の年数
+                          start.year=2012, # 将来予測の開始年
+                          N=10, # 確率的計算の繰り返し回数
+                          ABC.year=2013, # ABCを計算する年
+                          waa.year=2009:2011, # 生物パラメータの参照年
+                          maa.year=2009:2011,
+                          M.year=2009:2011,
+                          is.plot=TRUE, # 結果をプロットするかどうか
+                          seed=1,
+                          recfunc=HS.recAR, # 再生産関係の関数
+                          rec.arg=list(a=HS.par2$pars$a,b=HS.par2$pars$b,gamma=HS.par2$gamma,rho=HS.par2$pars$rho,
+                          sd=HS.par2$pars$sigma,bias.correction=TRUE,resid=HS.par2$resid))
+```
+
+
+両者の違いを比較してみる
+
+```{r}
+par(mfrow=c(2,2))
+plot(fres.HS$vssb[,-1],fres.HS$naa[1,,-1],xlab="SSB",ylab="Recruits") 
+plot(fres.HS4$vssb[,-1],fres.HS4$naa[1,,-1],xlab="SSB",ylab="Recruits") 
+plot.futures(list(fres.HS,fres.HS4)) # 両者の比較
+```
+
+## 6. MSY管理基準値の計算
+* est.MSY関数を使います
+* 原理的には，上記の将来予測において，Fの値を様々に変えたときの平衡状態（またはそれに近い状態,```nyear```で指定される最終年）における資源量やそれに対応するF等を管理基準値として算出します
+* ```is.plot=TRUE```とするとFを様々に変えたときの平均親魚資源量と平均漁獲量，対応するFの管理基準値を出力します
+* この関数で計算できる管理基準値は以下のようなものになります
+
+| 管理基準値 |説明 | 
+|:----------------------|:---------------------------------|
+| SSB_MSY | 平衡状態において平均最大漁獲量が最大になるときの親魚量 |
+| SSB_0 (XX%) | F=0で将来予測したときの平衡状態における親魚量($B_0$)に対する割合（引数```B0percent```でc(0.4, 0.5)のように指定します） |
+| SSB_PGY (LXX%) (HXX%)| SS_MSYで達成される漁獲量のXX%を達成するときの親魚量の下限または上限（引数```PGY```でc(0.9, 0.95)のように指定します） |
+
+
+```{r msy, fig.cap="**図：est.MSYのis.plot=TRUEで計算完了時に表示される図．Fの強さに対する平衡状態の親魚資源量（左）と漁獲量（右）．推定された管理基準地も表示．**", fig.height=5}
+# MSY管理基準値の計算
+MSY.HS <- est.MSY(res.pma, # VPAの計算結果
+                 fres.HS$input, # 将来予測で使用した引数
+                 nyear=50,N=10, # 将来予測の年数，繰り返し回数
+                 PGY=c(0.9,0.95),B0percent=c(0.3,0.4)) # PGYとB0%レベル
+```
+
+結果の要約は```MSY.HS$summary```になります．
+
+```{r summary}
+# 結果の表示
+MSY.HS$summary
+```
+
+<!--
+**表1: 管理基準値候補の表（上記の表を成形したもの）**
+```{r,echo=FALSE}
+xx <- apply(MSY.HS$summary,2,as.numeric)
+rownames(xx) <- rownames(MSY.HS$summary)
+d.tmp <- rep(2,ncol(xx))
+d.tmp[c(1,2,4)] <- 0
+knitr::kable(xx,digits=d.tmp)
+```
+-->
+
+- MSY.HSには，F=0, F=Fmsy, F=引数で指定されたPGYやSPRに対応するFで将来予測した結果も格納されています（→ファイルサイズ大きくなりますので注意！）
+    - fout0: F=0の結果
+    - fout.msy: F=Fmsyの結果
+    - fout.B0percent: F=F0基準によるF（複数の結果がリスト形式で入っています）
+    - fout.PGY: PGY基準によるF（複数の結果がリスト形式で入っています）
+```{r}
+names(MSY.HS)
+```
+
+
+## 7. 結果の可視化
+
+### 推定資源量のプロットなど
+coming soon
+
+### 管理基準値間のパフォーマンス評価
+- est.MSYで推定された管理基準値間でのパフォーマンスを評価します．
+- get.perform関数を，将来予測の結果にあてはめます
+- MSY.HSの中に将来予測の結果が入っているのでそれを使うと以下のようになります
+
+```{r performance}
+# パフォーマンス指標のとりだし
+# MSYのときのパフォーマンス指標
+MSY.index <- get.perform(MSY.HS$fout.msy,
+                         Blimit=HS.par$pars$b, # Blimit的なしきい値を下回る確率を計算するときのしきい値を与える
+                         longyear=50, # 十分長いと考えられる年。longyear年の間に何回悪いことが起きるか、という指標を計算するときに使う
+                         smallcatch=0.5) # おこってほしくない漁獲量のしきい値。平均に対する割合であたえる（0.5の場合、平均漁獲量の半分よりも漁獲量が少なくなる年数をカウントする）
+
+# PGYやB0percentの指標
+PGY.index <- sapply(MSY.HS$fout.PGY,get.perform,
+                        Blimit=HS.par$pars$b, longyear=50, smallcatch=0.5)
+B0percent.index <- sapply(MSY.HS$fout.B0percent,get.perform,
+                        Blimit=HS.par$pars$b, longyear=50, smallcatch=0.5)
+# 比較対象として、現状維持シナリオの場合
+current.index <- get.perform(fres.currentSSB,Blimit=HS.par$pars$b)
+
+# まとめ
+total.index <- rbind(MSY.index, current.index, t(PGY.index),t(B0percent.index)) # パフォーマンス指標まとめ
+rownames(total.index)[1:2] <- c("MSY","current SSB")
+index.name <- c("catch.mean","short.catch3","short.catch5","biom.mean","catch.safe","ssb.safe","effort","largefish.catch")
+total.index[index.name]
+```
+
+<!--
+表2. 候補となる管理基準値のパフォーマンス指標(上の表を成形したもの)
+```{r,echo=FALSE}
+xx <- apply(total.index[index.name],2,as.numeric)
+rownames(xx) <- rownames(total.index)
+knitr::kable(xx,digits=c(0,0,0,0,0,0,2,2)) # パフォーマンス指標の出力
+```
+-->
+
+- パフォーマンス指標の説明
+
+| パフォーマンス指標 |説明 | 
+|:----------------------|:---------------------------------|
+| catch.mean | 平衡状態における平均漁獲量|
+| short.catch3| 直近3年の累積漁獲量
+| short.catch5| 直近5年の累積漁獲量
+| biom.mean | 平衡状態における平均資源量＝CPUEに相当 |
+| catch.safe | F一定で漁獲したとき，何年に一度（最大は50年またはget.performの引数```longyear```年)，漁獲量が平均漁獲量の1/2(または引数```smallcatch```の割合)よりも小さくなるか |
+| ssb.safe | F一定で漁獲したとき，何年に一度（最大は50年またはget.performの引数```longyear```年)，親魚量がget.performの引数```Blimit```よりも小さくなるか |
+| effort | 努力量の大きさ．のべ操業時間数，のべ総針数などに相当 |
+| largefish.catch | 漁獲物中の大型魚の割合（年齢区分の上1/3の年齢の魚を大型魚と定義） |
+
+
+
+```{r radial, fig.cap="図1：管理基準値値のパフォーマンス指標の比較（plotRadialの出力結果）．MSYもPGYもB0(30-40%)も，平衡状態の漁獲量では大きな違いはないが，SSBの安定性（ssb.safe）や大型魚の割合，努力量などでパフォーマンスに大きな違いが見られる　→　科学的にはssbのリスクが高いPGY90%_lower, PGY95%_lowerのBtargetはおすすめできない。候補としてはMSYかB0-30%, B0-40%（あくまで例です。ssb.safeはBlimitをどのようにとるかで変わってきますので、、）。",fig.height=10}
+library(RColorBrewer)
+library(plotrix)    
+plotRadial(total.index[index.name],
+               base=1) # どの管理基準値をベースにするか。行の番号
+```
+
+### Kobe chartの作成
+- 管理基準値の候補が3つくらいに絞られたら，それを基準としたkobe chartを作りましょう．
+- plot.kobe関数を使います
+
+```{r kobe}
+par(mfrow=c(2,2),mar=c(4,4,2,1),xpd=FALSE)    
+plot.kobe(res.pma,unlist(MSY.HS$summary$SSB[1]),unlist(MSY.HS$summary$U[1]),title.tmp="MSY")
+plot.kobe(res.pma,unlist(MSY.HS$summary$SSB[7]),unlist(MSY.HS$summary$U[7]),title.tmp="B0-30%")
+plot.kobe(res.pma,unlist(MSY.HS$summary$SSB[8]),unlist(MSY.HS$summary$U[8]),title.tmp="B0-40%")   
+```
+
+## 8. 短期的戦略の検討
+上記のMSY管理基準値は平衡状態におけるパフォーマンスを比較し，**長期的に望ましい管理（何をめざおうとするのか？）**を検討するためのものです．では，長期的な目標が決まったあとに，目標とする資源量に**何年でどのくらいの確率で回復させるのか**については短期的な管理戦略におけるトレードオフを考える必要があります．短い期間で回復させる場合には，直近の漁獲量の削減幅が大きくなります．一方で，回復までに非常に長い時間かけてもよい場合には，直近の漁獲量の削減幅は小さくなります．ここでは，目標資源量Btargetが決まっている場合，target.yearとtarget.probabilityの設定によって資源の回復やF，短期的な収量がどのように変わるかを比較します．そのためには，future.vpaの関数をメインで使っていきます．
+
+- get.kobemat関数内でfuture.vpa関数を繰り返し使い，Fをいろいろ変えたときのBtargetを上回る確率を計算します
+- 確率で計算するため，1万回（N=10000）くらい繰り返し回数は必要になります
+- **get.kobematをget.kobemat2に更新（2018/06/11）、確率だけでなく平均親魚量なども出力するようにしました
+
+```{r kobe2, fig.cap="図: Kobe matrixの出力結果．たとえばBtarget=B_MSYとし，F_MSY（Fcurrentの1/2）で漁獲を続けた場合，Btargetまで50％以上の確率で回復するのには8年かかる，ということがわかります"}
+### BMSY, B0-30%, B0-40%を候補にkobe II matrixを計算
+# 一番最初の引数は，MSYで将来予測したときの結果を入れてください
+kobe2.msy <-get.kobemat(MSY.HS$fout.msy,Btarget=MSY.HS$summary$SSB[1],nyear=15,fmulti=seq(from=0.2,to=0.7,by=0.1),N=100)
+kobe2.B30 <-get.kobemat(MSY.HS$fout.msy,Btarget=MSY.HS$summary$SSB[7],nyear=15,fmulti=seq(from=0.2,to=0.7,by=0.1),N=100)
+kobe2.B40 <-get.kobemat(MSY.HS$fout.msy,Btarget=MSY.HS$summary$SSB[8],nyear=15,fmulti=seq(from=0.2,to=0.7,by=0.1),N=100)    
+
+par(mfrow=c(2,2),mar=c(4,4,2,1))
+plot.kobemat(kobe2.msy,title.name="MSY",line=MSY.HS$summary$"Fref/Fcur"[1])
+plot.kobemat(kobe2.B30,title.name="B0_30%",line=MSY.HS$summary$"Fref/Fcur"[7])    
+plot.kobemat(kobe2.B40,title.name="B0_40%",line=MSY.HS$summary$"Fref/Fcur"[8])    
+```
+
+```{r}
+# get.kobemat2を使う場合
+kobe2.msy2 <-get.kobemat2(MSY.HS$fout.msy,Btarget=MSY.HS$summary$SSB[c(1,7,8)],target.name=c("MSY","B0-30%","B0-40%"), nyear=15,fmulti=seq(from=0.2,to=0.7,by=0.1),N=100)
+
+par(mfrow=c(2,3),mar=c(4,4,2,1),xpd=FALSE)
+plot.kobemat2(kobe2.msy2)
+```
+
+## 9. 全体の流れのまとめ（時間がない人はここからスタート）
+
+MSY管理基準値を計算は以下の手順でおこないます．
+
+1. データの読み込み
+2. VPAの実施(vpa)　→ res.pma(VPAの結果)を得る
+3. 再生産関係パラメータのあてはめ (fit.HS, fit.BH, fit.RI)　→  HS.par (HSにあてはめたときのパラメータ推定結果)を得る
+4. HS.parをもとに将来予測を実施する(future.vpa) → fres.HS (HSを仮定したときの将来予測結果)を得る
+5. res.pmaとfres.HSを使ってMSY管理基準値を計算する (est.MSY) → MSY.HS (管理基準値の推定結果)を得る
+6. MSY.HS (管理基準値の推定結果)の結果をもとに，複数の管理目標のパフォーマンスを調べ（get.perform），ダイアグラムを書く（plotRadial）** → 管理基準値候補の絞り込み **
+7. 絞り込んだ目標管理基準値を基準としたKobe chart（plot.kobe）, Kobe matrix (get.kobemat, plot.kobemat) を作る
+
+一連のコードはこちら．
+```{r ref.label='data-read', eval=FALSE}
+```
+```{r ref.label='vpa',  eval=FALSE}
+```
+```{r ref.label='SRdata', eval=FALSE}
+```
+```{r ref.label='SRfit', eval=FALSE}
+```
+```{r ref.label='future.vpa', eval=FALSE}
+```
+```{r ref.label='msy', eval=FALSE}
+```
+```{r ref.label='summary'}
+```
+```{r ref.label='performance'}
+```
+```{r ref.label='radial'}
+```
+```{r ref.label='kobe'}
+```
+```{r ref.label='kobe2'}
+```
+
+  
+## 注：以前配布していたSR.estを継続して使う場合
+
+- 古い関数を読み込んで使ってください
+- [future.1.10.r](http://cse.fra.affrc.go.jp/ichimomo/fish/future1.10.r)
+```{r, eval=FALSE}
+source("future1.10.r")
+mout.hs <- SR.est(res.pma, 
+               what.est=c(TRUE,FALSE,FALSE), # HS,BH,RIの順に，どの再生産関係をフィットするか。
+               bref.year=1982:2011, # 生物パラメータを平均する期間
+#               years=1970:2013, # 観測されたSR関係を用いる期間
+               er.log=TRUE, # 誤差。TRUEで対数正規誤差。残差のサンプリングにはまだ対応していないです。
+               fc.year=2009:2011, # MSY計算のさいに選択率を平均する期間
+               is.boot=10, # 再生産関係のパラメータを推定するさい，不確実性をブートストラップで評価するときのブートストラップ回数
+               N=10, # MSYを計算するときのstochastic simulationの繰り返し回数。10,000回以上が推奨値ですが、最初はN=10くらいでエラーが出ないか確認してください
+               seed=1, # 乱数の種。この値を変えると乱数が変わるので結果も変わる
+               PGY=c(0.8,0.9,0.95) # PGY管理基準値を計算するかどうか。計算しない場合はNULLを入れる
+               )
+```
+
+- BH, RI
+```{r, eval=FALSE}
+mout.bhri <- SR.est(res.pma, 
+               what.est=c(FALSE,TRUE,TRUE), # HS,BH,RIのどれをフィットするか。
+               bref.year=1982:2011, # 生物パラメータを用いる期間(比較的長い期間をとったほうがロバストかも)
+#               years=1970:2013, # 観測されたSR関係を用いる期間
+               er.log=TRUE, # 誤差。TRUEで対数正規誤差。残差のサンプリングにはまだ対応していないです。
+               fc.year=2009:2011, # MSY計算のさいに選択率を平均する期間
+               N=10, # 5000以上が推奨値ですが、最初はN=10くらいでエラーが出ないか確認してください
+               is.boot=10,
+               seed=1, # 乱数の種。この値を変えると乱数が変わるので結果も変わる
+               PGY=NULL # PGY管理基準値を計算するかどうか。計算しない場合はNULLを入れる
+               )
+```
+
+```{r, eval=FALSE}
+allplot(mout.hs) # 結果のプロット(HS)。複数のページにまたがって出力されるので、Rのグラフの履歴を記録しておくようにするか（Rのグラフィックウィンドウを選択した状態で「履歴」→「記録」）、PDFに出力するようにする
+allplot(mout.bhri,target="bh") # 結果のプロット(BH)(十分にBHの出力に対応していません)
+allplot(mout.bhri,target="ri") # 結果のプロット(RI)(十分にRIの出力に対応していません)
+```
+
+
+

@@ -1,0 +1,104 @@
+<html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+
+<head>
+<meta http-equiv="Content-Type" content="text/html"; charset="UTF-8">
+<link href="./style.css" rel="stylesheet" type="text/css">
+<title>Ichinokawa M's page</title>
+</head>
+
+<h3> Welcome to Ichinokawa M's page. </h3><br>
+
+<p>
+<mytitle> R packages </mytitle> <hr>
+     <ul>
+        <li> <a href="fish/rvpa.html"> RVPA:</a> VPA繧堤畑縺����◆譌･譛ｬ蝗ｽ蜀����ｳ����ｺ舌����雉����ｺ占ｩ穂ｾ｡繧定｡後≧縺溘ａ縺ｮR縺ｮ繝代ャ繧ｱ繝ｼ繧ｸ <br><br>
+        <li> <a href="Tuna/OM_ss.html"> doRLP:</a> Operating model to test performance of integrated model of Stock Synthesis (SS) and do relative likelihood profiles (RLP) for the simulated replications. <br><br>
+        <li> <a href="Tuna/glm.tree.html"> glm.tree: </a> For creating area stratification automatically in conducting glm.  <br><br>
+        <li> <a href="Tuna/sstools.html"> sstools: </a> For creating graphical diagnostics with Stock Synthesis (SS) output.  <br><br>
+        <li> <a href="Tuna/ssfuture.html"> ssfuture: </a> For conducting stochastic future projections from Stock Synthesis (SS) output.  
+            <ul>
+	      Beta version is uploaded (30th May 2011).  However, man and manuals are only preliminary.  
+            </ul>
+     </ul>
+</p>
+
+<br><br>
+
+<p>
+<mytitle> 繝励Ξ繧ｼ繝ｳ繝ｻ遐比ｿｮ莨夊ｳ����侭 </mytitle> <hr>
+ <ul>
+  <li> <a href="MSY.html"> 譚ｱ莠ｬ螟ｧ蟄ｦ螟ｧ豌玲ｵｷ豢狗�皮ｩｶ謇�蜈ｱ蜷悟茜逕ｨ繧ｷ繝ｳ繝昴ず繧ｦ繝�縲�邂｡逅����岼讓吶ｒ隕区紺縺医◆謌代′蝗ｽ縺ｮ譁ｰ縺励＞雉����ｺ占ｩ穂ｾ｡縺ｨ邂｡逅����ｼ�2018蟷ｴ4譛�26譌･�����螟ｧ豌玲ｵｷ豢狗�皮ｩｶ謇������</a> <br> <br> 
+  <li>  2017蟷ｴ蠎ｦ雉����ｺ千ｮ｡逅�����比ｿｮ�����2017蟷ｴ6譛茨ｼ�荳ｭ螟ｮ豌ｴ逕｣遐皮ｩｶ謇������</a> <br> 
+       <ul> 
+         <li> <a href="fish/kensyu2017/R-intro.pdf"> R隰帷ｿ剃ｼ� </a>
+         <li> <a href="fish/kensyu2017/ichinokawa1.pdf"> 蟶る����蟾晢ｼ亥燕蜊奇ｼ娥SY縺ｫ縺､縺����※����� </a>         
+         <li> <a href="fish/kensyu2017/ichinokawa2.pdf"> 蟶る����蟾晢ｼ亥ｾ悟濠����幄ｳ����ｺ占ｩ穂ｾ｡繝｢繝����Ν縺ｫ縺､縺����※����� </a>                  
+         <li> <a href="fish/kensyu2017/nishijima.pdf"> 隘ｿ蠍具ｼ医ョ繝ｫ繝ｪ繝ｼ豕輔→VPA縺ｫ縺､縺����※����� </a>                           
+	縲�縲�</ul>         
+  <li> <a href="fish/kensyu2015/kensyu2015.html"> 2015蟷ｴ蠎ｦ雉����ｺ千ｮ｡逅�����比ｿｮ�����2015蟷ｴ5譛�12-13譌･�����荳ｭ螟ｮ豌ｴ逕｣遐皮ｩｶ謇������</a> <br> <br> 
+
+  <li> <a href="ss-kento/ss-kentos.html"> 邨ｱ蜷医Δ繝����Ν讀懆ｨ惹ｼ� </a> (2014蟷ｴ12譛�12-13譌･�����縺ｾ縺ｻ繧阪����繝槭う繝ｳ繧ｺ荳画ｵｦ����� <br><br>
+  <li> 2014蟷ｴ蠎ｦ雉����ｺ千ｮ｡逅�����比ｿｮ�����2014蟷ｴ5譛�21譌･�����荳ｭ螟ｮ豌ｴ逕｣遐皮ｩｶ謇������
+      <ul> 
+        <li> <a href="kensyu2014.pdf">繝励Ξ繧ｼ繝ｳ雉����侭(pdf蠖｢蠑�) </a>
+        <li> <a href="kensyu2014.pptx">繝励Ξ繧ｼ繝ｳ雉����侭(pptx蠖｢蠑�) </a>
+      </ul> <br>
+  <li> <a href="fish/kensyu2013.html"> 2013蟷ｴ蠎ｦ雉����ｺ千ｮ｡逅�����比ｿｮ�����2013蟷ｴ5譛�21-22譌･�����荳ｭ螟ｮ豌ｴ逕｣遐皮ｩｶ謇������</a> <br> <br> 
+
+  <li> <a href="fish/ssm.html"> 貍∵･ｭ繝��������繧ｿ縺ｨ逕滓����邉ｻ隗｣譫舌����縺溘ａ縺ｮ繝溘ル繝ｯ繝ｼ繧ｯ繧ｷ繝ｧ繝�������� in 2013�����2013蟷ｴ9譛�26-27譌･�����隘ｿ豬ｷ蛹ｺ豌ｴ逕｣遐皮ｩｶ謇������</a> <br> <br> 
+
+
+  <li> 螟ｧ豌玲ｵｷ豢狗�皮ｩｶ謇�蜈ｱ蜷悟茜逕ｨ繧ｷ繝ｳ繝昴ず繧ｦ繝�����域ｼ∵･ｭ諠�����ｱ繧堤畑縺����◆豌ｴ逕｣雉����ｺ舌����隧穂ｾ｡縺ｨ邂｡逅����ｼ臥匱陦ｨ雉����侭 縲梧律譛ｬ蟒ｶ邵����ｼ∵･ｭ繝��������繧ｿ繧堤畑縺����◆讓呎ｺ門喧CPUE縲� <br> 
+    <ul>
+        <li> <a href="Tuna/glm_longline_presentation.pdf">繝励Ξ繧ｼ繝ｳ雉����侭(pdf蠖｢蠑�) </a>
+        <li> <a href="Tuna/glm_longline_presentation.pptx">繝励Ξ繧ｼ繝ｳ雉����侭(繝代Ρ繝ｼ繝昴う繝ｳ繝亥ｽ｢蠑�) </a>
+	<li> <a href="Tuna/glm_longline_abstract.pdf"> 隕∵葎 </a>
+        <li> 2010蟷ｴ12譛�1譌･�����譚ｱ莠ｬ螟ｧ蟄ｦ螟ｧ豌玲ｵｷ豢狗�皮ｩｶ謇�
+     </ul>
+  <li> 髱吝ｲ｡螟ｧ蟄ｦ騾｣謳ｺ隰帷ｾｩ 逋ｺ陦ｨ雉����侭 縲碁ｭ壹����謨ｰ繧呈耳螳壹＠縺ｦ邂｡逅����☆繧具ｼ壹∪縺舌ｍ繧貞ｷ｡繧句嵜髫帷噪縺ｪ貍∵･ｭ邂｡逅��������迴ｾ迥ｶ縲�
+     <ul>
+       <li><a href="Tuna/lecture20100928.pdf">繝励Ξ繧ｼ繝ｳ雉����侭</a>
+       <li>2010蟷ｴ9譛�28譌･�����繝壹ぎ繧ｵ繝ｼ繝磯撕蟯｡
+    </ul>
+  <li> 譌･譛ｬ豌ｴ逕｣蟄ｦ莨� 蜿｣鬆ｭ逋ｺ陦ｨ雉����侭縲檎ｵｱ蜷亥梛雉����ｺ占ｩ穂ｾ｡繝｢繝����Ν縺ｨ蟆����擂莠域ｸｬ謇区ｳ輔��
+     <ul>
+       <li><a href="Tuna/projection_with_SS20080328.pdf">繝励Ξ繧ｼ繝ｳ雉����侭</a>
+       <li>2008蟷ｴ3譛�28譌･�����譌･譛ｬ豌ｴ逕｣蟄ｦ莨夲ｼ域擲豬ｷ螟ｧ蟄ｦ�����
+    </ul>
+
+  <li> 繧ｷ繝ｳ繝昴ず繧ｦ繝� 逋ｺ陦ｨ雉����侭 縲梧ｼ∵･ｭ繝��������繧ｿ隗｣譫舌����縺溘ａ縺ｮR縲�
+     <ul>
+       <li><a href="Tuna/R_fish.pdf">繝励Ξ繧ｼ繝ｳ雉����侭</a>
+       <li><a href="Tuna/R_fish.zip">繝励Ξ繧ｼ繝ｳ雉����侭縺ｨ繧ｵ繝ｳ繝励Ν繧ｳ繝ｼ繝峨����繧ｵ繝ｳ繝励Ν繝��������繧ｿ</a>
+    </ul>
+
+  </ul>   
+</p>
+
+<br><br>
+<p>
+<mytitle>蜍牙ｼｷ莨夊ｳ����侭</mytitle> <hr>
+ <ul>
+  <li> VPA蜍牙ｼｷ莨夲ｼ医ユ繧ｭ繧ｹ繝茨ｼ�<a href="http://www.fao.org/docrep/003/x9026e/x9026e00.htm"> FAO VPA manual </a>)<br> 
+    <ul>
+        <li> <a href="Tuna/Chap1-3and5.pdf"> 1-3縲����ｼ慕ｫ� </a> (2012蟷ｴ8譛�22譌･)
+        <li> <a href="Tuna/Chap4.pdf">4遶�</a>(2012蟷ｴ8譛�22譌･)
+     </ul>
+  </ul>   
+</p>
+
+<br><br>
+<p>
+<mytitle> Others/縺昴����莉� </mytitle> <hr>
+  <ul>
+   <li> <a href="links.html">Links</a>
+   <li> <a href="publications.html"> Publications</a>
+   <li>  Contact to: ichimomo�����fra.affrc.go.jp
+  </ul>
+</p>
+
+<br><br>
+
+</body>
+</html>

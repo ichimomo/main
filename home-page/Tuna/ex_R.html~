@@ -1,0 +1,120 @@
+<html lang="ja">
+
+
+<p>
+<h3>workingディレクトリに、ss2による結果のファイル (ss2.rep)と、データファイル (ss2.dat)がおいてある場合の例 (2008年4月18日更新 <- 以前のバージョンと引数名が違う部分があります)。</h3>
+</P>
+
+
+<ul>
+<li> 自動実行関数の使い方 <br>
+   <ul> 
+    <li> ss2names.nam等、必要なファイルが入っているディレクトリ内で、doautorun()を実行。
+   </ul>
+<br><br>
+<li> repファイルのデータ読み込みとプロット<br>
+<ul>
+  <li> フォルダ内に "ss2.rep" という名前のrepファイルがある場合（引数なし）。この場合、PDFファイルが作成される
+  <font color=#003399><pre><code>
+      > allplot.ss2()
+   </code></pre></font>
+
+  <li> フォルダ内に "ss2-1.rep"、"ss2-2.rep"という名前のrepファイルが複数ある場合の結果の重ね書き。
+  <font color=#003399><pre><code>
+      > allplot.ss2(repfile=list("ss2-1.rep","ss2-2.rep"))
+   </code></pre></font>
+
+  <li> 結果をpostscript形式の１つのファイルに出力する場合(dev.type="ps"とします)。postscripファイルは、Acrobatを使ってpdfに変換できます。dev.typeを明示的に指定しない場合は、postscriptで出力されます。
+  <font color=#003399><pre><code>
+      > allplot.ss2("ss2.rep",outfile="out",dev.type="ps",length.on=F,select.on=F,tohtml=F)
+  </code></pre></font>
+
+  <li> allplot.ss2の返り値を明示的に指定すると、読み込んだrepファイルの内容を、Rのオブジェクトとして返す（が、まだ不完全なので、バイオマスと漁業ごとの体長分布しか出ません）。
+  <font color=#003399><pre><code>
+      > ss2.result <- allplot.ss2("ss2.rep",outfile="out",length.on=F,select.on=F,tohtml=T)
+      > names(ss2.result)
+      [1] "biom"       "sum.length"
+  </code></pre></font>
+
+  <li> 現在のディレクトリ内に結果のプロットを示す大量のjpegファイルを生成し、その一覧を"out.html"ファイルで概観するとき。dev.type="html"と指定してください。select.on=Tで選択率のプロット、length.on=Tでサイズ頻度のフィットのプロットを表示。複数のrepファイルを同時に重ね書きしたいときは、repファイル名をlistとして指定する （<a href="Interactive-weighting/allplot/out.html">出力例</a>）。（length.on=Tなどとしたときには、大量にjpegファイルが生成されるので注意！）
+  <font color=#003399><pre><code>
+      > allplot.ss2("ss2.rep",outfile="out",dev.type="html",length.on=F,select.on=F,tohtml=T)
+      > allplot.ss2(list("ss2.rep","ss2_2.rep"),outfile="out",dev.type="html",length.on=F,select.on=F,tohtml=T)
+   </code></pre></font>
+
+
+  <li> また、readSS22関数を使って、バイオマス、SSB、加入だけを取り出すこともできる
+  <font color=#003399><pre><code>
+      > ss2.result2 <- readSS22("ss2.rep")     
+      > plot(ss2.result2$biomass)  # バイオマスのプロット
+  </code></pre></font>
+
+  <li> allplot.ss2内部で使われている関数群、getBabs.ss2 (バイオマス、漁獲量など）、getCPUE.ss2（CPUEの観測値と予測値）、getSelect.ss2 （推定された選択率）、getALK.ss2 （推定されたage length key）、getAgecomp.ss2 (体長分布の観測値と予測値）を使って、個別の情報を取り出すことも可能。
+</ul>
+<br><br>
+
+<li> datファイル内のサイズデータの読み込み
+<font color=#003399>
+<pre><code>
+> dat <- replace.dat(0,datfile="ss2.dat",replace.on=F)
+    # replace.datの関数を使って、ss2.datファイルの内容を
+    # Rオブジェクトとして読み込む。
+    # replace.on=Tとすると、第一引数に渡したベクトルで、
+    # ss2.datの測定尾数を置き換える。
+> names(dat) 
+[1] "oldsmp"       "newsmp"       "age.comp.obs"
+    # datは、"oldsmp","newsmp","age.comp.obs"の名前のオブジェクト
+    # を持つリストとしてオブジェクト化されている
+> dat$age.comp.obs
+     Year Season Fisheries Sex Part Nsample          V7          V8          V9
+363  1952      3         1   1    0      60 0.000000000 0.000000000 0.000000000
+364  1953      3         1   1    0     143 0.000000000 0.000000000 0.000000000
+365  1954      3         1   1    0     146 0.000000000 0.000000000 0.000000000
+366  1955      3         1   1    0      66 0.000000000 0.000000000 0.000000000
+367  1957      3         1   1    0     107 0.000000000 0.000000000 0.000000000
+368  1958      3         1   1    0     292 0.000000000 0.000000000 0.000000000
+369  1959      3         1   1    0     564 0.000000000 0.000000000 0.000000000
+370  1960      3         1   1    0    1556 0.000000000 0.000000000 0.000000000
+371  1961      3         1   1    0     889 0.000000000 0.000
+   # dat$age.comp.obsで、datファイルに入力したサイズデータが見れる
+> tapply(dat$age$Nsample,list(dat$age$Year,dat$age$Fish),sum,na.rm=T)
+        1     2    3    4    5    6    7    8    9     10     11    12   13
+1952   60  2903  793   NA   NA   NA   NA   NA   NA     NA    475    NA   NA
+1953  143  2699   NA   98   NA   NA   NA   NA   NA    109   1635    NA   NA
+1954  146  3769 1123   NA   NA   NA   NA   NA   NA    652    726    NA   NA
+1955   66  2933  529  162   NA   NA   NA   NA   NA   7281   7947    68   NA
+1956   NA  1601  171   NA   NA   NA   NA   NA   NA   2931   6937 12848   NA
+1957  107   793  104   NA   NA   NA   NA   NA   NA   1930   4917  4346   NA
+1958  292  2477  184  338   NA   NA   NA   NA   NA   4752   4646  1829   NA
+   # Nsample(観測尾数)を、年、漁業別に集計
+</code></pre>
+</font><br><br>
+
+<li> 測定尾数を、年ごとの棒グラフにして見る
+<font color=#003399>
+<pre><code>
+par(mfrow=c(2,4),mar=c(4,4,4,0),ps=16)
+    # 2x4の描画空間の設定
+tmp.name <- c("Longline","Japan-PS","WPS-PS","Troll","Pole&Line","Set net","EPO-PS","Others")
+    # 漁業の定義名をあらかじめ決めておく
+tmp <- list(1:4,5:8,8:12,13:16,17:20,21:24,25:28,30:33)
+    # SS2では、1-4が日本の延縄、5-8が巻き網、、のように定義されている
+tmp.res <- tapply(dat$age$Nsample,list(dat$age$Fish,dat$age$Year),sum,na.rm=T)
+    # dat$age$Nsample(サイズサンプルごとの観測尾数)を漁業(dat$age$Fish), 年(dat$age$Year)
+    # ごとに集計
+tmp.res <- ifelse(is.na(tmp.res),0,tmp.res)
+    # 集計結果内のNAを0に変換
+for(i in 1:8){
+  barplot(apply(tmp.res[tmp[[i]],],2,sum),col=rainbow(4)[2])
+    # 棒グラフのプロット
+  title(paste(tmp.name[i],": Av. smp=",round(mean(apply(tmp.res[tmp[[i]],],2,sum)))),line=1,adj=0)
+    # タイトルと、平均の測定尾数を表示
+}
+</code></pre></font>
+<a href="nsample8.jpg"> 出力例 </a><br><br>
+<br><br>
+
+</ul>
+
+<a href="tuna.html"> Topに戻る </a>
+</html>
