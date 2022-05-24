@@ -1,0 +1,49 @@
+#'
+#' ## Rで使えるデバッグ技まとめ
+#'
+#' 自分で関数を作っていたがバグがありそう、、。エラーが出て止まってしまった、、。そんなときに役立つ関数をまとめました。
+#'
+#' ### mainfuncの定義
+#'
+#' とりあえず実行するとerrorを返す関数mainfuncを定義します。このあと、debug関数を試すのに使っていきます。
+#'
+#' 
+
+#+
+
+# example function
+
+add_func <- function(x,y){
+  return(x+y)
+}
+
+log_func <- function(x,y){
+  res <- sum(list(log(x),log(y)))
+  return(res)
+}
+
+mainfunc <- function(nsim){
+  res1 <- res2 <- list()
+  for(i in 1:nsim){
+    x <- rnorm(1,mean=2)
+    y <- rnorm(1,mean=2)
+    res1[i] <- add_func(x,y)
+    res2[i] <- log_func(x,y)
+  }
+  allres <- c(res1,res2)
+  return(allres)
+}
+
+mainfunc(10)
+
+#'
+#' ## 'traceback()'
+#'
+#' - errorが出た直後に打つ
+#' 
+#' 
+
+#+
+
+mainfunc(10)
+traceback()
