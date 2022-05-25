@@ -95,7 +95,7 @@ a <- fit.spict(rnorm(100))
 #' - やめたい場合は`options(error=NULL)`
 #' - 挙動
 #'    1. 入れ子状の関数のどの階層でdebug modeに入るか聞かれるので番号で入りたい階層を選ぶ
-#'    2. debug modeに入ると、一行一行実行するモードに入る→Enterを押すとエラーを吐いて1の状態に戻る。Enterを押さないように、現状がどんな感じになっているのか調べる
+#'    2. debug modeに入ると、一行一行実行するモードに入る→Enterを押すと1の状態に戻る。現状がどんな感じになっているのか調べる
 #'    3. 調べるのが終わったらEnterを押して1に戻って0を押すとデバッグモードが終了する
 #' - 使いどころ
 #'    - `traceback()`見たけどどこでエラーがおこっているのかよくわからない...
@@ -150,7 +150,10 @@ mainfunc <- function(nsim){
     y <- rnorm(1,mean=2)
     res1[i] <- add_func(x,y)
     tmp <- try(log_func(x,y))
-    if(class(tmp)=="try-error") res2[i] <- NA else res2[i] <- tmp
+    if(class(tmp)=="try-error"){ 
+          res2[i] <- NA 
+          browser()
+    } else res2[i] <- tmp
   }
   allres <- c(res1,res2)
   return(allres)
@@ -164,5 +167,5 @@ mainfunc(10)
 #' - `warning()`は普段は特に気にしなくても良いものだが、気にしなければいけないwaningもある
 #'    - NAになるはずがないのにNAになってしまっている
 #'    - `置き換えるべき項目数が、置き換える数の倍数ではありませんでした`みたいな
-#' - でもどのタイミングでwarningが出ているかわからない→`options(warn=1)` この数字: warningをどれだけ重大なこととして扱うか：（0: ちょっと引っかかるけど関数をストップさせるほどではない, 1: エラーでしょ）　→ `options(warn=1); options(error=recover) ; ` とすればwarningの箇所も特定できる
+#' - でもどのタイミングでwarningが出ているかわからない→`options(warn=2)` この数字: warningをどれだけ重大なこととして扱うか：（0: ちょっと引っかかるけど関数をストップさせるほどではない, 1: エラーでしょ）　→ `options(warn=2); options(error=recover) ; ` とすればwarningの箇所も特定できる
 #' 
