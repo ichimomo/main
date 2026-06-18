@@ -18,13 +18,6 @@
 - 再生産関係
   - [推定方法](https://ichimomo.github.io/frasyr/articles/fittingSR.html)
   - [モデル診断方法](https://github.com/ichimomo/frasyr_tool/tree/YR2024/SRcheck) ※(プライベートリポジトリです)
-- [将来予測](https://github.com/ichimomo/frasyr/wiki/future_new) 
-- [開発ワークフロー](https://github.com/ichimomo/frasyr/wiki/Development-Policy)
-
-- [frasyr_toolのWiki](https://github.com/ichimomo/frasyr_tool/wiki)には以下の情報があります
-   - [fraysr_toolのスクリプトがうまく動かない場合の相談のしかた](https://github.com/ichimomo/frasyr_tool/wiki/%E3%83%90%E3%82%B0%E5%A0%B1%E5%91%8A%E3%83%BB%E3%82%A8%E3%83%A9%E3%83%BC%E7%9B%B8%E8%AB%87%E3%81%AE%E3%82%84%E3%82%8A%E3%81%8B%E3%81%9F)。問題あったかたはまずこちらをご一読し，その後，issueかチームスかどちらかに質問を投げてください．
-   - [fraysr_toolの途中で出力される再生産関係の比較の表の見方](https://github.com/ichimomo/frasyr_tool/wiki/%E5%86%8D%E7%94%9F%E7%94%A3%E9%96%A2%E4%BF%82%E3%81%AE%E8%A1%A8%E3%81%AE%E8%A6%8B%E6%96%B9)
-
 
 ## その他のレポジトリ
 
